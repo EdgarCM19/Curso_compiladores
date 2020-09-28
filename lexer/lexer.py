@@ -67,13 +67,12 @@ def openFile(file_name):
 if __name__ == "__main__":
     rules = [ 
         ('((\/\*[\s\S]*?\*\/)|(\/\/+((.)*)+\n))', 'COMMENT'),
-        ('(\{|\}|\[|\]|\(|\)|\#|\,|\.|\;|\")',             'SPECIAL_SYMBOL'),
+        ('(\"((.)*)\")', 'STRING'),
+        ('(\{|\}|\[|\]|\(|\)|\#|\,|\.|\;)',             'SPECIAL_SYMBOL'),
         ('((\%+\={0,1})|(\*+\={0,1})|(\++\={0,1})|(\-+\={0,1})|(\/)|(\=+\={0,1})|(\>+\={0,1})|(\<+\={0,1})|(\!+\={0,1})|((\&{1,2})+\={0,1})|((\|{1,2})+\={0,1})|(\^+\={0,1})|~)',    'OPERATOR'),
-        ('(\d+(\.(\d+)*){0,1})', 'NUMBER'), #Falta agregarle 
+        ('((0)(((x([abcdefABCDEF]|\d){1,8}))|(b([01]+))))', 'NUMBER'),  
         ('(array|(b)+((reak)|(yte)|(ool)+(ean){0,1})|(c)+((ase)|(har)|(on)+((st)|(tinue)))|(d)+((ef)+((ault)|(ine))|((o)+(uble){0,1}))|else|goto|HIGH|(i)+(f|nt|nclude)|(INPUT)+(_PULLUP){0,1}|((L)+(ED_BUILTIN|OW))|long|OUTPUT|return|short|static|switch|true|unsigned|vo+(id|latile)|while|word)', 'KEYWORD'),
         ('(((_)*[a-zA-Z0-9]*)+)', 'IDENTIFIER'),
-        ('((.)*)', 'STRING'),
-        ('.', 'OTHERS') #Tal vez quitarlo?
     ]
 
     buffer = openFile('simple_code.ino')
