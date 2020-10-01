@@ -1,15 +1,25 @@
-int led = 13; // the pin the LED is connected to
+#include <Firmata.h>
+
+int led = 13; 
 int algo = 0x3dfe45;
 float x = 0.13f ? algo < 1 : 3.4f;
 void setup() {
-  pinMode(led, OUTPUT) // Declare the LED as an output
+  pinMode(led, OUTPUT) 
+  Serial.begin(9600);
 }
 
-led++;
+led++; //Comentario
 led += 3;
 /*
 nada más para ver
 */
 void loop() {
-  digitalWrite(led, HIGH) // Turn the LED on
+  digitalWrite(led, HIGH)
+  if(led >= 0)
+    Serial.write("Cadena");
+  else
+    Serial.wite("Otra cosa");
+    for(int i = 0; i < 10; i++){
+      algo += i << 2;
+    }
 }
