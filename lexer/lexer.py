@@ -103,7 +103,7 @@ if __name__ == "__main__":
         #('(\{|\}|\[|\]|\(|\)|\#|\,|\.|\;)',             'SPECIAL_SYMBOL'),
     ]
 
-    buffer = openFile('test.ino')
+    buffer = openFile('tirasensoresconPID.ino')
     if buffer is None:
         print('Error de lectura de archivo')
         exit(-1)
