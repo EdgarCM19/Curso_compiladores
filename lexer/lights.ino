@@ -24,10 +24,13 @@ void loop() {
         velocity = Serial.read();
 
         //the lights are set according to the data on MIDI ch.1
-        if(cmd==144) state=0;               
-        else if(cmd==128) state=1;        
+        if(cmd==144){ 
+            state=0;
+        }               
+        else if (cmd==128){ 
+            state=1;
+        }        
 
-        // so that lights don't change while the new data is being shifted
         digitalWrite(latchPin, LOW);
 
         light = getBit(pitch);
