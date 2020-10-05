@@ -22,8 +22,6 @@ void loop() {
         cmd = Serial.read();
         pitch = Serial.read();
         velocity = Serial.read();
-
-        //the lights are set according to the data on MIDI ch.1
         if(cmd==144){ 
             state=0;
         }               
@@ -35,21 +33,18 @@ void loop() {
 
         light = getBit(pitch);
         if(light<8)
-        bitWrite(lightData1, light, state);
+            bitWrite(lightData1, light, state);
         else if(light<16){
-        light-=8;
-        bitWrite(lightData2, light, state);
+            light-=8;
+            bitWrite(lightData2, light, state);
         }
-        else {
-        light-=16;
-        bitWrite(lightData3, light, state);
+        else{
+            light-=16;
+            bitWrite(lightData3, light, state);
         }
-        // shift out the data
         shiftOut(dataPin, clockPin, MSBFIRST, lightData3);
         shiftOut(dataPin, clockPin, MSBFIRST, lightData2);
         shiftOut(dataPin, clockPin, MSBFIRST, lightData1);
-
-        // turn on the lights according to the new data
         digitalWrite(latchPin, HIGH);
     }
 }
