@@ -1,6 +1,10 @@
 import re
 
 class Token():
+    '''
+    Clase encargada de tener toda la información del token, como el tipo, el lexema 
+    que contiene al igual que la posicion donde fue encontrado dicho token.
+    '''
     def __init__(self, type, lexema, position):
         self.type = type
         self.lexema = lexema
@@ -14,7 +18,14 @@ class ScannerError(Exception):
         self.position = position
 
 class Scanner():
+    '''
+    Clase encargada de abrir, procesar y retornar todos los tokens existentes en un archivo de entrada.
+    '''
     def __init__(self, regular_expresions, buffer):
+        '''
+        Recive una lista de tuplas las cuales contienen una expresion regular con el nombre del conjunto de dicha expresion regular.
+        Recive un buffer el cual es el texto a procesar. 
+        '''
         self.id = 1
         self.regular_expresions_groups = []
         self.group_types = {}
@@ -24,6 +35,10 @@ class Scanner():
 
         
     def initRegex(self, regex):
+        '''
+        Se encarga de unir todas las expresiones regulares en una sola, dandole formato de
+        grupo-expresion <(?<nombre_grupo>expresion_regular)> para poder identificar los matchs.
+        '''
         for _re, _type in regex:
             groupname = 'GROUP%s' % self.id
             self.regular_expresions_groups.append('(?P<%s>%s)' % (groupname, _re))
@@ -65,6 +80,7 @@ def openFile(file_name):
         return None
 
 if __name__ == "__main__":
+    #Se define la lista de expresiones regulares con su respectivo nombre de grupo.
     rules = [ 
         ('((\/\*[\s\S]*?\*\/)|(\/\/+((.)*)+\n))',                                                                                   'COMMENT'),
         ('(\"((.)*)\")',                                                                                                            'STRING'),
@@ -96,11 +112,7 @@ if __name__ == "__main__":
         ('(((\d+)(\.)(\d+)(f)?)|((\d+)(E)(\-|\+)(\d)))',                                                                            'FLOAT_POINT'),
         ('((((0)(((x([abcdefABCDEF]|\d){1,8}))|(b([01]+))))|(\d+))(l|L)?(u|U)?)',                                                   'INTEGER'),
         ('(((\_)*[a-zA-Z0-9]*)+)',                                                                                                   'IDENTIFIER'),
-        ('(.)', 'OTHER')
-        #('(array|(b)+((reak)|(yte)|(ool)+(ean){0,1})|(c)+((ase)|(har)|(on)+((st)|(tinue)))|(d)+((ef)+((ault)|(ine))|((o)+(uble){0,1}))|else|goto|HIGH|(i)+(f|nt|nclude)|(INPUT)+(_PULLUP){0,1}|((L)+(ED_BUILTIN|OW))|long|OUTPUT|return|short|static|switch|true|unsigned|vo+(id|latile)|while|word)', 'KEYWORD'),
-        #('((0)(((x([abcdefABCDEF]|\d){1,8}))|(b([01]+))))', 'NUMBER'),  
-        #('((\%+\={0,1})|(\*+\={0,1})|(\++\={0,1})|(\-+\={0,1})|(\/)|(\=+\={0,1})|(\>+\={0,1})|(\<+\={0,1})|(\!+\={0,1})|((\&{1,2})+\={0,1})|((\|{1,2})+\={0,1})|(\^+\={0,1})|~)',    'OPERATOR'),
-        #('(\{|\}|\[|\]|\(|\)|\#|\,|\.|\;)',             'SPECIAL_SYMBOL'),
+        ('(.)', 'OTHER'),
     ]
 
     buffer = openFile('test.ino')
