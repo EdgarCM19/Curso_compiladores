@@ -98,7 +98,7 @@ if __name__ == "__main__":
         ('(\%|\+|\-|\/)',                                                                                                           'ARITMETHIC'),
         ('\*',                                                                                                                      'ASTERISK'),
         ('\=',                                                                                                                      'ASSIGMENT'),
-        ('\&',                                                                                                                      'ASPERSAND'),
+        ('\&',                                                                                                                      'AMPERSAND'),
         ('\?',                                                                                                                      'QUESTION'),
         ('\:',                                                                                                                      'COLON'),
         ('((\<\<)|(\>\>)|(\^)|(\|)|(\~))',                                                                                          'BITEWISE'),
