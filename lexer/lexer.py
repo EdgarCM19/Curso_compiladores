@@ -111,7 +111,7 @@ if __name__ == "__main__":
         ('((include)|(define))',                                                                                                    'DIRECTIVE'),
         ('(((\d+)(\.)(\d+)(f)?)|((\d+)(E)(\-|\+)(\d)))',                                                                            'FLOAT_POINT'),
         ('((((0)(((x([abcdefABCDEF]|\d){1,8}))|(b([01]+))))|(\d+))(l|L)?(u|U)?)',                                                   'INTEGER'),
-        ('(((\_)*[a-zA-Z0-9]*)+)',                                                                                                   'IDENTIFIER'),
+        ('(((\_)*[a-zA-Z0-9]*)+)',                                                                                                  'IDENTIFIER'),
         ('(.)', 'OTHER'),
     ]
 
