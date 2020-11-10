@@ -9,10 +9,10 @@ class Grammar():
     ('F', ['ident'])
     '''
     def __init__(self, N : list, T : list, S : str, P : list):
-        self.N = N;
-        self.T = T;
-        self.S = S;
-        self.P = P;
+        self.N = N
+        self.T = T
+        self.S = S
+        self.P = P
         self.initTable()
 
     def __str__(self):
@@ -25,7 +25,7 @@ class Grammar():
             produc += "P{} = {} -> {}\n".format(index, prod[0], prod[1])
         return gram + produc
 
-    def first(self):
+    def firstfun(self):
         self.first = {}
         for non_terminal in self.N:
             self.first[non_terminal] = self.getFirst(non_terminal)
@@ -74,7 +74,7 @@ class Grammar():
                 self.follow[non_terminal].update(set('$'))
         return self.follow[non_terminal]
   
-    def predic(self):
+    def predicfun(self):
         self.predic = list()
         for symbol in self.N:
             self.getPredic(symbol)
@@ -101,7 +101,7 @@ class Grammar():
     
     def isLL1(self):
         for non_term in self.N :
-            if not self.isLL1forNonTerminal(nonTer):
+            if not self.isLL1forNonTerminal(non_term):
                 return False 
         return True
 
@@ -135,9 +135,9 @@ class Grammar():
             print(cad)
 
     def initTable(self):
-        self.first()
+        self.firstfun()
         self.follows()
-        self.predic()
+        self.predicfun()
         self.createTable()
 class Parser():
 
