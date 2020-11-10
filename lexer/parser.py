@@ -9,10 +9,10 @@ class Grammar():
     ('F', ['ident'])
     '''
     def __init__(self, N : list, T : list, S : str, P : list):
-        self.N = N;
-        self.T = T;
-        self.S = S;
-        self.P = P;
+        self.N = N
+        self.T = T
+        self.S = S
+        self.P = P
         self.initTable()
 
     def __str__(self):
