@@ -77,7 +77,7 @@ class Scanner():
         self.stack = list()
         try:
             for token in self.getTokens():
-                if token.type != 'COMMENT':
+                if token.type != 't_comment':
                     self.stack.append(token)
         except ScannerError as e:
             print('Error at position {}'.format(e.position))
@@ -106,38 +106,90 @@ def openFile(file_name):
 
 if __name__ == "__main__":
     #Se define la lista de expresiones regulares con su respectivo nombre de grupo.
-    '''
+    
     rules = [ 
-        ('((\/\*[\s\S]*?\*\/)|(\/\/+((.)*)+\n))',                                                                                   'COMMENT'),
-        ('(\"((.)*)\")',                                                                                                            'STRING'),
-        ('\{',                                                                                                                      'BRACE_O'),
-        ('\}',                                                                                                                      'BRACE_C'),
-        ('\[',                                                                                                                      'BRACKET_O'),
-        ('\]',                                                                                                                      'BRACKET_C'),
-        ('\(',                                                                                                                      'PARENTHESIS_O'),
-        ('\)',                                                                                                                      'PARENTHESIS_C'),
-        ('\#',                                                                                                                      'PREPROCESSOR'),
-        ('\,',                                                                                                                      'COMMA'),
-        ('\.',                                                                                                                      'DOT'),
-        ('\;',                                                                                                                      'SEMI_COLON'),
-        ('(((\+|\-){2})|((\%|\&|\*|\-|\+|\/|\||\^)\=))',                                                                            'COMPOUND'),
-        ('(\%|\+|\-|\/)',                                                                                                           'ARITMETHIC'),
-        ('\*',                                                                                                                      'ASTERISK'),
-        ('\=',                                                                                                                      'ASSIGMENT'),
-        ('\&',                                                                                                                      'AMPERSAND'),
-        ('\?',                                                                                                                      'QUESTION'),
-        ('\:',                                                                                                                      'COLON'),
-        ('((\<\<)|(\>\>)|(\^)|(\|)|(\~))',                                                                                          'BITEWISE'),
-        ('((\<|\>)(\=)?)|((\=|\!)(\=))',                                                                                            'RELATIONAL'),
-        ('(\!|((\&\&|\|\|)))',                                                                                                      'LOGICAL'),
-        ('((array)|(b((ool)((ean)?)|(yte)))|(char)|(double)|(float)|(int)|(long)|(s((hort)|(tring)))|(void)|(word)|(unsigned))',    'DATA_TYPE'),
-        ('((break)|(c(ase|ontinue))|(d(efault|o))|(else)|(for)|(goto)|(if)|(return)|(switch)|(while))',                             'STRUCTURE_CONTROL'),
-        ('((const)|(static)|(volatile))',                                                                                           'SCOPE'),
-        ('((false)|(HIGH)|(INPUT(_PULLUP)?)|(LED_BUILTIN)|(LOW)|(OUTPUT)|(true))',                                                  'CONSTANT'),
-        ('((include)|(define))',                                                                                                    'DIRECTIVE'),
-        ('(((\d+)(\.)(\d+)(f)?)|((\d+)(E)(\-|\+)(\d)))',                                                                            'FLOAT_POINT'),
-        ('((((0)(((x([abcdefABCDEF]|\d){1,8}))|(b([01]+))))|(\d+))(l|L)?(u|U)?)',                                                   'INTEGER'),
-        ('(((\_)*[a-zA-Z0-9]*)+)',                                                                                                  'IDENTIFIER'),
+        ('((\/\*[\s\S]*?\*\/)|(\/\/+((.)*)+\n))',                                   't_comment'),
+        ('((\<\w*.h\>)|(\"\w*.h\"))',                                               't_lib'),
+        ('(\"((.)*)\")',                                                            't_string'),
+        ('\{',                                                                      't_brace_o'),
+        ('\}',                                                                      't_brace_c'),
+        ('\[',                                                                      't_bracket_o'),
+        ('\]',                                                                      't_bracket_c'),
+        ('\(',                                                                      't_parenthesis_o'),
+        ('\)',                                                                      't_parenthesis_c'),
+        ('\#',                                                                      't_sharp'),
+        ('\,',                                                                      't_comma'),
+        ('\.',                                                                      't_dot'),
+        ('\;',                                                                      't_semi_colon'),
+        ('\?',                                                                      't_question'),
+        ('\:',                                                                      't_colon'),
+        ('\%\=',                                                                    't_mod_equals'),
+        ('\%',                                                                      't_mod'),
+        ('\*\=',                                                                    't_multiply_equals'),
+        ('\*',                                                                      'ASTERISK'),
+        ('\+\+',                                                                    't_plus_plus'),
+        ('\+\=',                                                                    't_plus_equals'),
+        ('\+',                                                                      't_plus'),
+        ('\-\-',                                                                    't_sub_sub'),
+        ('\-\=',                                                                    't_sub_equals'),
+        ('\-',                                                                      't_sub'),
+        ('\/\=',                                                                    't_divide_equals'),
+        ('\/',                                                                      't_divide'),
+        ('\=\=',                                                                    't_comparation'),
+        ('\=',                                                                      't_assigment'),
+        ('\!\=',                                                                    't_diferent_to'),
+        ('\!',                                                                      't_not'),
+        ('\<\<',                                                                    't_left_desp'),
+        ('\<\=',                                                                    't_less_equals'),
+        ('\<',                                                                      't_less'),
+        ('\>\>',                                                                    't_rigth_desp'),
+        ('\<\=',                                                                    't_great_equals'),
+        ('\<',                                                                      't_less'),
+        ('\&\&',                                                                    't_and'),
+        ('\&\&',                                                                    't_ampersand'),
+        ('\|\|',                                                                    't_or'),
+        ('\|\|',                                                                    't_bit_or'),
+        ('\^\=',                                                                    't_bit_xor_equals'),
+        ('\^',                                                                      't_bit_xor'),
+        ('\~\=',                                                                    't_c1_equals'),
+        ('\~',                                                                      't_c1'),
+        ('bool',                                                                    't_bool'),
+        ('byte',                                                                    't_byte'),
+        ('char',                                                                    't_char'),
+        ('t_double',                                                                't_double'),
+        ('float',                                                                   't_float'),
+        ('int',                                                                     't_int'),
+        ('long',                                                                    't_long'),
+        ('short',                                                                   't_short'),
+        ('unsigned',                                                                't_unsigned'),
+        ('string',                                                                  't_string'),
+        ('void',                                                                    't_void'),
+        ('word',                                                                    't_word'),
+        ('define',                                                                  't_define'),
+        ('include',                                                                 't_include'),
+        ('HIGH',                                                                    't_HIGH'),
+        ('LOW',                                                                     't_LOW'),
+        ('INPUT_PULLUP',                                                            't_INPUT_PULLUP'),
+        ('INPUT',                                                                   't_INPUT'),
+        ('OUTPUT',                                                                  't_OUTPUT'),
+        ('LED_BUILTIN',                                                             't_LED_BUILTIN'),
+        ('break',                                                                   't_break'),
+        ('continue',                                                                't_continue'),
+        ('do',                                                                      't_do'),
+        ('while',                                                                   't_while'),
+        ('else',                                                                    't_else'),
+        ('for',                                                                     't_for'),
+        ('if',                                                                      't_if'),
+        ('return',                                                                  't_return'),
+        ('switch',                                                                  't_switch'),
+        ('case',                                                                    't_case'),
+        ('default',                                                                 't_default'),
+        ('true',                                                                    't_true'),
+        ('false',                                                                   't_false'),
+        ('(((\d+)(\.)(\d+)(f)?)|((\d+)(E)(\-|\+)(\d)))',                            't_float'),
+        ('((((0)(((x([abcdefABCDEF]|\d){1,8}))|(b([01]+))))|(\d+))(l|L)?(u|U)?)',   't_int'),
+        ('(\'.\')',                                                                 't_char'),
+        ('(((\_)*[a-zA-Z0-9]*)+)',                                                  't_identifier'),
         ('(.)', 'OTHER'),
     ]
     '''
@@ -150,8 +202,11 @@ if __name__ == "__main__":
         ('\)', 't_)'),
         ('\w', 't_id'),
     ]
+    '''
     buffer = openFile('test.ino')
     if buffer is None:
         print('Error de lectura de archivo')
         exit(-1)
     scanner = Scanner(rules, buffer)
+    for token in scanner.getTokens():
+        print(token)
