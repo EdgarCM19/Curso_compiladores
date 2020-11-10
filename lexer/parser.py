@@ -1,3 +1,5 @@
+from lexer import Scanner
+
 class Grammar():
     '''
     Producciones del tipo:
@@ -11,6 +13,7 @@ class Grammar():
         self.T = T;
         self.S = S;
         self.P = P;
+        self.initTable()
 
     def __str__(self):
         cad = ""
@@ -70,30 +73,7 @@ class Grammar():
         if(non_terminal == self.S):
                 self.follow[non_terminal].update(set('$'))
         return self.follow[non_terminal]
-
-    '''
-    def predic(self):
-        self.predic = {str(clave) : [] for clave in self.P}
-        for production in self.P:
-            self.getPredic(production)
-
-    def getPredic(self, production):
-        symbol, produc = production
-        alpha = set()
-        for prod in list(produc) :
-            if(prod in self.N):
-                alpha = alpha.union(set(self.first[prod]))
-            elif prod in self.T:
-                temp = set()
-                temp.add(prod)   
-                alpha = alpha.union(temp)
-                break
-            if 'ε' in alpha or 'ε' in produc:
-                self.predic.setdefault(str(production), []).append(list(alpha.difference('ε').union(self.follow[symbol])))
-            else :
-                self.predic.setdefault(str(production), []).append(list(alpha))
-    '''
-    
+  
     def predic(self):
         self.predic = list()
         for symbol in self.N:
@@ -142,7 +122,6 @@ class Grammar():
                 self.table[produc[0]][item] = produc        
     #print(str(self.table))
 
-
     def saveTable(self):
         with open('tabla.txt', 'w') as file:
             cad = '[N/T]'
@@ -155,36 +134,45 @@ class Grammar():
                 cad += '\n'
             print(cad)
 
+    def initTable(self):
+        self.first()
+        self.follows()
+        self.predic()
+        self.createTable()
+class Parser():
+
+    def __init__(self, lexer: Scanner, grammar : Grammar):
+        self.lexer = lexer
+        self.grammar = grammar
+
     def analyze(self):
         stack = list()
         stack.append('$')
-        stack.append(self.S)
+        stack.append(self.grammar.S)
         log = ""
         print("Inicio del analisis sintactico")
         while True :
-            #-----
-            #print('[Pila]>{}'.format(stack))
-            log += '[Pila]>{} ||| '.format(stack) 
-            #print('[Entrada]>{}'.format(list(reversed(la_buena))))
-            log += '[Entrada]>{} ||| '.format(list(reversed(la_buena)))
-            #-----
+            log += '[Pila]>{} ||| '.format(stack)             
+            log += '[Entrada]>{} ||| '.format(', '.join(token.type for token in self.lexer.stack))
             A = stack[len(stack) - 1]
-            a = la_buena[len(la_buena) - 1]
-            if A in self.T + ['$']:
-                if A == a :
+            a = lexer.stackPeek()
+            if a is None : break
+            if A in self.grammar.T + ['$']:
+                if A == a.type :
                     #print('[Salida]>Emparejar {}'.format(a))
-                    log += ('[Salida]>Emparejar {} \n'.format(a))
+                    log += ('[Salida]>Emparejar {} \n'.format(a.type))
                     stack.pop()
                     if len(stack) != 0:
-                        a = analex()
-                        a = la_buena[len(la_buena) - 1]
+                        a = lexer.stackPop()
+                        if a is None : break
+                        a = lexer.stackPeek()
                 else :
-                    print('Se encontro : {} pero se esperaba {}'.format(a, A))
+                    log += 'Se encontro : {} pero se esperaba {}'.format(a.type, A)
                     break
             else :
-                if self.table[A][a] != '@':
-                    #print('[Salida]>{}'.format(self.table[A][a]))
-                    _, producs = self.table[A][a]
+                production = self.grammar.table[A][a.type]
+                if production != '@':
+                    _, producs = production
                     log += ('[Salida]>{} -> {} \n'.format(_, " ".join(producs)))
                     stack.pop()
                     for ci in reversed(producs):
@@ -192,81 +180,57 @@ class Grammar():
                             stack.append(ci)
                 else :
                     #for predi in self.predic:
-                    print('Se encontro : {} pero se esperaba {}'.format(a, A))    
+                    log += '\n[ERROR]> Se encontro : {} pero se esperaba {}'.format(a.type, A)    
                     break
             if A == '$':
                 break
         print(log)
         print("Analisis sintactico finalizado")
-            
 
 
-lex_cad = ['id', '+', 'id', '*', 'id', '$']
-la_buena = list(reversed(lex_cad))
-def analex():
-    return la_buena.pop()
-
-
+rules = [
+        ('\+', 't_+'),
+        ('\-', 't_-'),
+        ('\*', 't_*'),
+        ('\/', 't_/'),
+        ('\(', 't_('),
+        ('\)', 't_)'),
+        ('[a-zA-z]', 't_id'),
+    ]       
 
 no_term = ['E', 'E\'', 'T', 'T\'', 'F']
-term = ['id', '+', '-', '*', '/', '(', ')']
+term = ['t_id', 't_+', 't_-', 't_*', 't_/', 't_(', 't_)']
 prod = [
     #('X', 'E'),
     ('E', ['T', 'E\'']),        
-    ('E\'', ['+', 'T', 'E\'']), 
-    ('E\'', ['-', 'T', 'E\'']), 
+    ('E\'', ['t_+', 'T', 'E\'']), 
+    ('E\'', ['t_-', 'T', 'E\'']), 
     ('E\'', ['ε']),
     ('T', ['F', 'T\'']),        
-    ('T\'', ['*', 'F', 'T\'']),
-    ('T\'', ['/', 'F', 'T\'']),
+    ('T\'', ['t_*', 'F', 'T\'']),
+    ('T\'', ['t_/', 'F', 'T\'']),
     ('T\'', ['ε']),
-    ('F', ['(', 'E', ')']),     
-    ('F',   ['id']),
+    ('F', ['t_(', 'E', 't_)']),     
+    ('F',   ['t_id']),
 ]
-'''
 
-no_term = ['A', 'B']
-term = ['a', 'b', 'c']
-prod = [     
-    ('A', ['a', 'b', 'B']),
-    ('A', ['B', 'b']),       
-    ('B', ['b']),
-    ('B', ['c']),
-]
-'''
+def openFile(file_name):
+    if file_name.endswith('.ino'):
+        with open(file_name, 'r') as file:
+            return file.read()
+    else :
+        return None
 
-algo = Grammar(no_term, term, 'E', prod)
-print(algo)
-algo.first()
-for nonTer in algo.N:
-    print('First ({}) = {}'.format(nonTer, algo.first[nonTer]))
-
-print("---------")
-algo.follows()
-for nonTer in algo.N:
-    print('Follows ({}) = {}'.format(nonTer, algo.follow[nonTer]))
-print("---------")
-
-algo.predic()
-print('Predict')
-for production, set_predic in algo.predic:
-    print("{} -> {} = {}".format(production[0], "".join(production[1]), '{' + ", ".join(set_predic) + '}'))
-
-#print(algo.predic)
-
-print("---------")
-if algo.isLL1():
-    print("La gramatica es LL(1)")
-algo.createTable()
-algo.saveTable()
-#for production in algo.P:
-#    print(algo.predic[production])
-
-algo.analyze()
-
-
-
-
+if __name__ == "__main__":
+    
+    buffer = openFile('test.ino')
+    if buffer is None:
+        print('Error de lectura de archivo')
+        exit(-1)
+    lexer = Scanner(rules, buffer)
+    grammar = Grammar(no_term, term, 'E', prod)
+    parser = Parser(lexer, grammar)
+    parser.analyze()
 
 
 

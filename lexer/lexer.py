@@ -32,6 +32,7 @@ class Scanner():
         self.initRegex(regular_expresions)
         self.position = 0
         self.buffer = buffer
+        self.initTokenStack()
 
         
     def initRegex(self, regex):
@@ -71,6 +72,30 @@ class Scanner():
             token = self.getToken()
             if token is None : break
             yield token
+    
+    def initTokenStack(self):
+        self.stack = list()
+        try:
+            for token in self.getTokens():
+                if token.type != 'COMMENT':
+                    self.stack.append(token)
+        except ScannerError as e:
+            print('Error at position {}'.format(e.position))
+        #self.stack = list(reversed(self.stack))
+        print('[STACK]>')
+        for t in self.stack:
+            print(t)
+
+    def stackPeek(self):
+        if len(self.stack) > 0:
+            return self.stack[0]
+        else: return None 
+
+    def stackPop(self):
+        if len(self.stack) > 0:
+            return self.stack.pop(0)
+        else : return None
+
 
 def openFile(file_name):
     if file_name.endswith('.ino'):
@@ -81,6 +106,7 @@ def openFile(file_name):
 
 if __name__ == "__main__":
     #Se define la lista de expresiones regulares con su respectivo nombre de grupo.
+    '''
     rules = [ 
         ('((\/\*[\s\S]*?\*\/)|(\/\/+((.)*)+\n))',                                                                                   'COMMENT'),
         ('(\"((.)*)\")',                                                                                                            'STRING'),
@@ -114,15 +140,18 @@ if __name__ == "__main__":
         ('(((\_)*[a-zA-Z0-9]*)+)',                                                                                                  'IDENTIFIER'),
         ('(.)', 'OTHER'),
     ]
-
-    buffer = openFile('lights.ino')
+    '''
+    rules = [
+        ('\+', 't_+'),
+        ('\-', 't_-'),
+        ('\*', 't_*'),
+        ('\/', 't_/'),
+        ('\(', 't_('),
+        ('\)', 't_)'),
+        ('\w', 't_id'),
+    ]
+    buffer = openFile('test.ino')
     if buffer is None:
         print('Error de lectura de archivo')
         exit(-1)
     scanner = Scanner(rules, buffer)
-    try:
-        for token in scanner.getTokens():
-            if token.type != 'COMMENT':
-                print(token)
-    except ScannerError as e:
-        print('Error at position {}'.format(e.position))
