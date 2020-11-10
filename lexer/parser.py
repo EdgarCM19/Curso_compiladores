@@ -187,7 +187,7 @@ class Parser():
         print(log)
         print("Analisis sintactico finalizado")
 
-
+'''
 rules = [
         ('\+', 't_+'),
         ('\-', 't_-'),
@@ -212,6 +212,81 @@ prod = [
     ('T\'', ['ε']),
     ('F', ['t_(', 'E', 't_)']),     
     ('F',   ['t_id']),
+]
+'''
+
+no_term = ['PROGRAMA', 'L_BLOQUES', 'BLOQUE', 'VAR', 'CONTROL', 'REPETICION', 'OPER', 'FUNC', 
+    'PRE_PRO', 'V_NORMAL', 'V_ARRAY', 'TIPO', 'ASIGNACION', 'PARAMS', 'VALOR', 'FUNC_CALL', 'OPER_A',
+    'OPER_L', 'OPER_B', 'OPER_COMPOU', 'ARIT_OPER', 'LOGIC_OPER', 'COMPOUND_OPER', 'COMP_ARIT', 'IF', 
+    'IF_ELIF', 'IF_ELSE', 'SWITCH', 'N_CASE', 'CASE', 'DEFAULT', 'DO_WHILE', 'FOR', 'FOR_ASIG', 'FOR_COND',
+    'FOR_INC', 'RETURN', 'DEFINE', 'INCLUDE', 'TOK_REMP', 'V_NORMALPP', 'V_NORMALP', 'V_ARRAYPP', 'V_ARRAYP',
+    'V_ARRAYPPP', 'DIMEN', 'A_INIT', 'OTRO', 'OPER_AP', 'OPER_LP', 'OPER_COMPOU', 'OPER_COMPOUP', 'PARAMS', 
+    'BLOCKS', 'N_CASEP', 'DO_WHILEP', 'FOR_CONDP', 'FUNCP', 'RETURNP' 
+]
+term = ['t_lib', 't_string', 't_brace_o', 't_brace_c', 't_bracket_o', 't_bracket_c', 't_parenthesis_o',
+    't_parenthesis_c', 't_sharp', 't_comma', 't_dot', 't_semi_colon', 't_question', 't_colon', 't_mod_equals',
+    't_mod', 't_multiply_equals', 't_asterisk', 't_plus_plus', 't_plus_equals', 't_plus', 't_sub_sub',
+    't_sub_equals', 't_sub', 't_divide_equals', 't_divide', 't_comparation', 't_assigment', 't_diferent_to',
+    't_not', 't_left_desp', 't_less_equals', 't_less', 't_rigth_desp', 't_great_equals', 't_great', 't_and', 
+    't_ampersand', 't_or', 't_bit_or', 't_bit_xor_equals', 't_bit_xor', 't_c1_equals', 't_c1', 't_bool', 
+    't_byte', 't_char', 't_double', 't_float', 't_int', 't_long', 't_short', 't_unsigned', 't_string', 't_void',
+    't_word', 't_define', 't_include', 't_HIGH', 't_LOW', 't_INPUT_PULLUP', 't_INPUT', 't_OUTPUT', 't_LED_BUILTIN',
+    't_break', 't_continue', 't_do', 't_while', 't_else', 't_for', 't_if', 't_return', 't_switch', 't_case', 't_default',
+    't_true', 't_false', 't_float', 't_int', 't_char', 't_identifier'
+]
+prod = [
+    ('PROGRAMA', ['L_BLOQUES']),
+    #GENERALES
+    ('L_BLOQUES', ['BLOQUE', 'L_BLOQUES']),
+    ('L_BLOQUES', ['ε']),
+    ('BLOQUE', ['VAR']),
+    ('BLOQUE', ['CONTROL']),
+    ('BLOQUE', ['REPETICION']),
+    ('BLOQUE', ['FUNC']),
+    ('BLOQUE', ['PRE_PRO']),
+    #VARIABLES
+    ('VAR', ['V_NORMAL']),
+    ('VAR', ['V_ARRAY']),
+    ('V_NORMAL', ['TIPO', 'V_NORMALPP']),
+    ('V_NORMALPP', ['t_identifier', 'V_NORMALP']),
+    ('V_NORMALPP', ['ASIGNACION', 'V_NORMALP']),
+    ('V_NORMALP', ['V_NORMAL', 'V_NORMALP']),
+    ('V_NORMALP', ['ε']),
+    ('V_ARRAY', ['TIPO', 't_identifier', 'V_ARRAYPP']),
+    ('V_ARRAYPP', ['t_bracket_o', 't_int', 't_bracket_c', 'V_ARRAYPPP']),
+    ('V_ARRAYPP', ['DIMEN', 'A_INIT']),
+    ('V_ARRAYPPP', ['t_semi_colon', 'V_ARRAYP']),
+    ('V_ARRAYPPP', ['t_assigment', 'PARAMS', 't_semi_colon', 'V_ARRAYP']),
+    ('V_ARRAYP', ['t_comma', 'V_ARRAY', 't_semi_colon', 'V_ARRAYP']),
+    ('V_ARRAYP', ['ε']),
+    ('DIMEN', ['t_']),
+    ('A_INIT', ['t_brace_o', 'A_INIT', 't_brace_c']),
+    ('A_INIT', ['VALOR_ASIG', 't_comma', 'A_INIT']),
+    ('A_INIT', ['t_semi_colon']),
+    ('A_INIT', ['ε']),
+    #TIPO DE DATOS
+    ('TIPO', ['t_kw_unsigned', 'OTRO']),
+    ('TIPO', ['t_kw_long', 'OTRO']),
+    ('TIPO', ['OTRO']),
+    ('OTRO', ['t_kw_int']),
+    ('OTRO', ['t_kw_float']),
+    ('OTRO', ['t_kw_double']),
+    ('OTRO', ['t_kw_char']),
+    ('OTRO', ['t_kw_bool']),
+    ('OTRO', ['t_kw_short']),
+    ('OTRO', ['t_kw_void']),
+    ('TIPO', ['t_kw_word']),
+    ('TIPO', ['t_kw_byte']),
+    ('VALOR', ['t_string']),
+    ('VALOR', ['t_char']),
+    ('VALOR', ['t_float']),
+    ('VALOR', ['t_int']),
+    ('VALOR', ['t_true']),
+    ('VALOR', ['t_false']),
+    ('ASIGNACION', ['t_identifier', 't_assigment', 'VALOR_ASIG', 't_semi_colon']),
+    
+    ('E\'', ['ε']),
+    
 ]
 
 def openFile(file_name):
