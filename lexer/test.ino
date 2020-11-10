@@ -9,5 +9,5 @@ while(true){
 }
 Serial.write("Hola mundo");
 binario += 0b0110;
+>=
 %hola; 
-
