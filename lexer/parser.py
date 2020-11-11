@@ -284,8 +284,71 @@ prod = [
     ('VALOR', ['t_true']),
     ('VALOR', ['t_false']),
     ('ASIGNACION', ['t_identifier', 't_assigment', 'VALOR_ASIG', 't_semi_colon']),
-    
-    ('E\'', ['ε']),
+    ('VALOR_ASIG', ['OPER']),
+    ('VALOR_ASIG', ['VALOR']),
+    ('VALOR_ASIG', ['FUNC_CALL']),
+    ('VALOR_ASIG', ['t_identifier']),
+    #OPERACIONES
+    ('OPER', ['OPER_A']),
+    ('OPER', ['OPER_L']),
+    ('OPER', ['OPER_B']),
+    ('OPER', ['OPER_COMPOU']),
+    ('OPER_A', ['t_parenthesis_o', 'OPER_A', 't_parenthesis_c']),
+    ('OPER_A', ['VALOR', 'OPER_AP']),
+    ('OPER_A', ['VALOR_ASIG', 'OPER_AP']),
+    ('OPER_AP', ['ARIT_OPER', 'OPER_A', 'OPER_AP']),
+    ('OPER_AP', ['ε']),
+    ('OPER_L', ['LOGIC_OPER', 'OPER_L', 'OPER_LP']),
+    ('OPER_L', ['t_parenthesis_o', 'OPER_L', 't_parenthesis_c', 'OPER_LP']),
+    ('OPER_L', ['VALOR', 'OPER_LP']),
+    ('OPER_L', ['VALOR_ASIG', 'OPER_LP']),
+    ('OPER_LP', ['COMP_OPER', 'OPER_L', 'OPER_LP']),
+    ('OPER_LP', ['LOGIC_OPER', 'OPER_L', 'OPER_LP']),
+    ('OPER_LP', ['ε']),
+    ('OPER_B', ['t_parenthesis_o', 'OPER_b', 't_parenthesis_c', 'OPER_BP']),
+    ('OPER_B', ['VALOR', 'OPER_BP']),
+    ('OPER_B', ['VALOR_ASIG', 'OPER_BP']),
+    ('OPER_BP', ['BITE_OPER', 'OPER_B', 'OPER_BP']),
+    ('OPER_BP', ['ε']),
+    ('OPER_COMPOU', ['t_identifier', 'OPER_COMPOUP']),
+    ('OPER_COMPOU', ['VALOR']),
+    ('OPER_COMPOU', ['VALOR_ASIG']),
+    ('OPER_COMPOUP', ['COMPOUND_OPER', 'OPER_COMPOUPP']),   
+    ('OPER_COMPOUP', ['COMP_ARIT']),
+    ('OPER_COMPOUPP', ['OPER_A']),
+    ('OPER_COMPOUPP', ['OPER_COMPOU']),
+    ('ARIT_OPER', ['t_plus']),
+    ('ARIT_OPER', ['t_sub']),
+    ('ARIT_OPER', ['t_asterisk']),
+    ('ARIT_OPER', ['t_divide']),
+    ('ARIT_OPER', ['t_mod']),
+    ('ARIT_OPER', ['t_assigment']),
+    ('LOGIC_OPER', ['t_not']),
+    ('LOGIC_OPER', ['t_and']),
+    ('LOGIC_OPER', ['t_or']),
+    ('COMP_OPER', ['t_diferent_to']),
+    ('COMP_OPER', ['t_less']),
+    ('COMP_OPER', ['t_less_equals']),
+    ('COMP_OPER', ['t_great']),
+    ('COMP_OPER', ['t_great_equal']),
+    ('COMP_OPER', ['t_comparation']),
+    ('BITE_OPER', ['t_ampersand']),
+    ('BITE_OPER', ['t_left_desp']),
+    ('BITE_OPER', ['t_rigth_desp']),
+    ('BITE_OPER', ['t_bit_xor']),
+    ('BITE_OPER', ['t_bit_or']),
+    ('BITE_OPER', ['t_c1']),
+    ('COMPOUND_OPER', ['t_mod_equals']),
+    ('COMPOUND_OPER', ['t_bit_and_equals']),
+    ('COMPOUND_OPER', ['t_multiply_equals']),
+    ('COMPOUND_OPER', ['t_plus_equals']),
+    ('COMPOUND_OPER', ['t_sub_equals']),
+    ('COMPOUND_OPER', ['t_divide_equals']),
+    ('COMPOUND_OPER', ['t_bit_xor_equals']),
+    ('COMPOUND_OPER', ['t_bit_or_equals']),
+    ('COMP_ARIT', ['t_plus_plus']),
+    ('COMP_ARIT', ['t_sub_sub']),
+    ('FUNC_CALL', ['t_ident', 't_parenthesis_o', 'PARAMS', 't_parenthesis_c']),
     
 ]
 
@@ -302,10 +365,11 @@ if __name__ == "__main__":
     if buffer is None:
         print('Error de lectura de archivo')
         exit(-1)
-    lexer = Scanner(rules, buffer)
-    grammar = Grammar(no_term, term, 'E', prod)
-    parser = Parser(lexer, grammar)
-    parser.analyze()
+    #lexer = Scanner(rules, buffer)
+    grammar = Grammar(no_term, term, 'PROGRAMA', prod)
+    print(grammar.isLL1())
+    #parser = Parser(lexer, grammar)
+    #parser.analyze()
 
 
 
