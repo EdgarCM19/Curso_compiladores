@@ -219,22 +219,22 @@ prod = [
 
 no_term = ['PROGRAMA', 'L_BLOQUES', 'BLOQUE', 'VAR', 'CONTROL', 'REPETICION', 'OPER', 'FUNC', 
     'PRE_PRO', 'V_NORMAL', 'V_ARRAY', 'TIPO', 'ASIGNACION', 'VALOR', 'FUNC_CALL', 'OPER_A',
-    'OPER_L', 'OPER_B', 'OPER_COMPOU', 'ARIT_OPER', 'LOGIC_OPER', 'COMPOUND_OPER', 'COMP_ARIT', 'IF', 
+    'OPER_L', 'OPER_B', 'ARIT_OPER', 'LOGIC_OPER', 'COMPOUND_OPER', 'COMP_ARIT', 'IF', 
     'IF_ELIF', 'IF_ELSE', 'SWITCH', 'N_CASE', 'CASE', 'DEFAULT', 'DO_WHILE', 'WHILE', 'FOR', 'FOR_ASIG', 'FOR_COND',
     'FOR_INC', 'RETURN', 'DEFINE', 'INCLUDE', 'TOK_REMP', 'V_NORMALPP', 'V_NORMALP', 'V_ARRAYPP', 'V_ARRAYP',
     'V_ARRAYPPP', 'DIMEN', 'A_INIT', 'OTRO', 'OPER_AP', 'OPER_LP', 'OPER_BP', 'OPER_COMPOU', 'OPER_COMPOUP', 'OPER_COMPOUPP', 'PARAMS', 
-    'PARAMSP', 'BLOCKS', 'N_CASEP', 'DO_WHILEP', 'FOR_CONDP', 'FUNCP', 'RETURNP', 'VALOR_ASIG' 
+    'PARAMSP', 'BLOCKS', 'N_CASEP', 'DO_WHILEP', 'FOR_CONDP', 'FUNCP', 'RETURNP', 'VALOR_ASIG', 'COMP_OPER', 'BITE_OPER' 
 ]
 term = ['t_lib', 't_string', 't_brace_o', 't_brace_c', 't_bracket_o', 't_bracket_c', 't_parenthesis_o',
     't_parenthesis_c', 't_sharp', 't_comma', 't_dot', 't_semi_colon', 't_question', 't_colon', 't_mod_equals',
     't_mod', 't_multiply_equals', 't_asterisk', 't_plus_plus', 't_plus_equals', 't_plus', 't_sub_sub',
     't_sub_equals', 't_sub', 't_divide_equals', 't_divide', 't_comparation', 't_assigment', 't_diferent_to',
-    't_not', 't_left_desp', 't_less_equals', 't_less', 't_rigth_desp', 't_great_equals', 't_great', 't_and', 
-    't_ampersand', 't_or', 't_bit_or', 't_bit_xor_equals', 't_bit_xor', 't_c1_equals', 't_c1', 't_wk_bool', 
+    't_not', 't_left_desp', 't_less_equals', 't_less', 't_rigth_desp', 't_great_equal', 't_great', 't_and', 
+    't_ampersand', 't_or', 't_bit_or', 't_bit_xor_equals', 't_bit_xor', 't_c1_equals', 't_c1', 't_kw_bool', 
     't_kw_byte', 't_kw_char', 't_kw_double', 't_kw_float', 't_kw_int', 't_kw_long', 't_kw_short', 't_kw_unsigned', 't_kw_string', 't_kw_void',
     't_kw_word', 't_define', 't_include', 't_HIGH', 't_LOW', 't_INPUT_PULLUP', 't_INPUT', 't_OUTPUT', 't_LED_BUILTIN',
     't_break', 't_continue', 't_do', 't_while', 't_else', 't_for', 't_if', 't_return', 't_switch', 't_case', 't_default',
-    't_true', 't_false', 't_float', 't_int', 't_char', 't_identifier'
+    't_true', 't_false', 't_float', 't_int', 't_char', 't_identifier', 't_bit_and_equals', 't_bit_or_equals'
 ]
 prod = [
     ('PROGRAMA', ['L_BLOQUES']),
@@ -308,7 +308,7 @@ prod = [
     ('OPER_LP', ['COMP_OPER', 'OPER_L', 'OPER_LP']),
     ('OPER_LP', ['LOGIC_OPER', 'OPER_L', 'OPER_LP']),
     ('OPER_LP', ['ε']),
-    ('OPER_B', ['t_parenthesis_o', 'OPER_b', 't_parenthesis_c', 'OPER_BP']),
+    ('OPER_B', ['t_parenthesis_o', 'OPER_B', 't_parenthesis_c', 'OPER_BP']),
     ('OPER_B', ['VALOR', 'OPER_BP']),
     ('OPER_B', ['VALOR_ASIG', 'OPER_BP']),
     ('OPER_BP', ['BITE_OPER', 'OPER_B', 'OPER_BP']),
@@ -352,7 +352,7 @@ prod = [
     ('COMP_ARIT', ['t_plus_plus']),
     ('COMP_ARIT', ['t_sub_sub']),
     ('FUNC_CALL', ['t_identifier', 't_parenthesis_o', 'PARAMS', 't_parenthesis_c']),
-    ('PARAMS', ['t_identififier', 'PARAMSP']),
+    ('PARAMS', ['t_identifier', 'PARAMSP']),
     ('PARAMS', ['VALOR_ASIG', 'PARAMSP']),
     ('PARAMS', ['ε']),
     ('PARAMSP', ['t_comma','PARAMS', 'PARAMSP']),
@@ -405,7 +405,7 @@ prod = [
     #PREPROCESADOR
     ('PRE_PRO', ['DEFINE']),
     ('PRE_PRO', ['INCLUDE']),
-    ('DEFINE', ['t_sharp', 't_define', 't_ident', 'TOK_REMP']),
+    ('DEFINE', ['t_sharp', 't_define', 't_identifier', 'TOK_REMP']),
     ('TOK_REMP', ['t_identifier']),
     ('TOK_REMP', ['VALOR']),
     ('TOK_REMP', ['OPER']),
