@@ -310,7 +310,7 @@ no_term = ['PROGRAMA', 'L_BLOQUES', 'L_BLOQUESP', 'BLOQUE', 'VAR_FUNC', 'VAR', '
     'IF_ELIF', 'IF_ELSE', 'SWITCH', 'N_CASE', 'CASE', 'DEFAULT', 'DO_WHILE', 'WHILE', 'FOR', 'FOR_ASIG', 'FOR_COND',
     'FOR_INC', 'RETURN', 'DEFINE', 'INCLUDE', 'TOK_REMP', 'V_NORMALPP', 'V_NORMALP', 'V_ARRAYPP', 'V_ARRAYP',
     'V_ARRAYPPP', 'DIMEN', 'A_INIT', 'OTRO', 'OPER_AP', 'OPER_LP', 'OPER_BP', 'OPER_COMPOU', 'OPER_COMPOUP', 'OPER_COMPOUPP', 'PARAMS', 
-    'PARAMSP', 'BLOCKS', 'N_CASEP', 'DO_WHILEP', 'FOR_CONDP', 'FUNCP', 'RETURNP', 'VALOR_ASIG', 'COMP_OPER', 'BITE_OPER' 
+    'PARAMSP', 'BLOCKS', 'N_CASEP', 'DO_WHILEP', 'FOR_CONDP', 'FUNCP', 'RETURNP', 'VALOR_ASIG', 'COMP_OPER', 'BITE_OPER', 'V_NORMALASIG', 'V_ARRAYFORM', 'VAR_FUNCP' 
 ]
 term = ['t_lib', 't_string', 't_brace_o', 't_brace_c', 't_bracket_o', 't_bracket_c', 't_parenthesis_o',
     't_parenthesis_c', 't_sharp', 't_comma', 't_dot', 't_semi_colon', 't_question', 't_colon', 't_mod_equals',
@@ -333,28 +333,26 @@ prod = [
     ('BLOQUE', ['CONTROL']),
     ('BLOQUE', ['REPETICION']),
     ('BLOQUE', ['PRE_PRO']),
-    ('VAR_FUNC ', ['PRE_PRO']),
+    ('VAR_FUNC', ['TIPO', 't_identifier', 'VAR_FUNCP']),
+    ('VAR_FUNCP', ['VAR']),
+    ('VAR_FUNCP', ['FUNC']),
     #VARIABLES
     ('VAR', ['V_NORMAL']),
     ('VAR', ['V_ARRAY']),
-    ('V_NORMAL', ['TIPO', 'V_NORMALPP']),
-    ('V_NORMALPP', ['t_identifier', 'V_NORMALP']),
-    ('V_NORMALPP', ['ASIGNACION', 'V_NORMALP']),
-    ('V_NORMALP', ['V_NORMAL', 'V_NORMALP']),
-    ('V_NORMALP', ['ε']),
-    ('V_ARRAY', ['TIPO', 't_identifier', 'V_ARRAYPP']),
-    ('V_ARRAYPP', ['t_bracket_o', 't_int', 't_bracket_c', 'V_ARRAYPPP']),
-    ('V_ARRAYPP', ['DIMEN', 'A_INIT']),
-    ('V_ARRAYPPP', ['t_semi_colon', 'V_ARRAYP']),
-    ('V_ARRAYPPP', ['t_assigment', 'PARAMS', 't_semi_colon', 'V_ARRAYP']),
-    ('V_ARRAYP', ['t_comma', 'V_ARRAY', 't_semi_colon', 'V_ARRAYP']),
-    ('V_ARRAYP', ['ε']),
-    ('DIMEN', ['t_bracket_o', 't_int', 't_bracket_c', 'DIMEN']),
-    ('DIMEN', ['ε']),
-    ('A_INIT', ['t_brace_o', 'A_INIT', 't_brace_c']),
-    ('A_INIT', ['VALOR_ASIG', 't_comma', 'A_INIT']),
-    ('A_INIT', ['t_semi_colon']),
-    ('A_INIT', ['ε']),
+    ('V_NORMAL', ['t_semi_colon']),
+    ('V_NORMAL', ['t_comma', 'V_NORMALP']),
+    ('V_NORMAL', ['V_NORMALASIG', 'V_NORMALPP']),
+    ('V_NORMALPP', ['V_NORMALP']),
+    ('V_NORMALPP', ['t_semi_colon']),
+    ('V_NORMALASIG', ['t_assigment', 'VALOR_ASIG']),
+    ('V_NORMALP', ['t_identifier','V_NORMAL']),
+
+    ('V_ARRAY', ['V_ARRAYFORM', 'V_ARRAYP']),
+    ('V_ARRAYP', ['t_assigment', 'PARAMS', 't_semi_colon']),
+    ('V_ARRAYP', ['t_semi_colon']),
+
+    ('V_ARRAYFORM', ['t_bracket_o', 't_int', 't_bracket_c']),
+
     #TIPO DE DATOS
     ('TIPO', ['t_kw_unsigned', 'OTRO']),
     ('TIPO', ['t_kw_long', 'OTRO']),
@@ -483,7 +481,7 @@ prod = [
     ('FOR_INC', ['OPER_A', 'FOR_INC']),
     ('FOR_INC', ['ε']),
     #FUNCIONES
-    ('FUNC', ['TIPO', 't_identifier', 't_parenthesis_o', 'PARAMS', 't_parenthesis_c', 'FUNCP']),
+    ('FUNC', ['t_parenthesis_o', 'PARAMS', 't_parenthesis_c', 'FUNCP']),
     ('FUNCP', ['t_semi_colon']),
     ('FUNCP', ['t_brace_o', 'L_BLOQUES', 'RETURN', 't_brace_c']),
     ('RETURN', ['t_return', 'RETURNP']),
