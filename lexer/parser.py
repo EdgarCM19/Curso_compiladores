@@ -31,6 +31,7 @@ class Grammar():
             self.first[non_terminal] = self.getFirst(non_terminal)
 
     def getFirst(self, non_terminal):
+        #print('Buscando el primeros de ' + non_terminal)
         if non_terminal in self.first: return self.first[non_terminal]
         productions = (prod for symbol, prod in self.P if symbol == non_terminal)
         prod_first = set()
@@ -102,6 +103,7 @@ class Grammar():
     def isLL1(self):
         for non_term in self.N :
             if not self.isLL1forNonTerminal(non_term):
+                print("[ERROR]>El simbolo {} comparte predictivos".format(non_term))
                 return False 
         return True
 
@@ -218,10 +220,10 @@ prod = [
 no_term = ['PROGRAMA', 'L_BLOQUES', 'BLOQUE', 'VAR', 'CONTROL', 'REPETICION', 'OPER', 'FUNC', 
     'PRE_PRO', 'V_NORMAL', 'V_ARRAY', 'TIPO', 'ASIGNACION', 'VALOR', 'FUNC_CALL', 'OPER_A',
     'OPER_L', 'OPER_B', 'OPER_COMPOU', 'ARIT_OPER', 'LOGIC_OPER', 'COMPOUND_OPER', 'COMP_ARIT', 'IF', 
-    'IF_ELIF', 'IF_ELSE', 'SWITCH', 'N_CASE', 'CASE', 'DEFAULT', 'DO_WHILE', 'FOR', 'FOR_ASIG', 'FOR_COND',
+    'IF_ELIF', 'IF_ELSE', 'SWITCH', 'N_CASE', 'CASE', 'DEFAULT', 'DO_WHILE', 'WHILE', 'FOR', 'FOR_ASIG', 'FOR_COND',
     'FOR_INC', 'RETURN', 'DEFINE', 'INCLUDE', 'TOK_REMP', 'V_NORMALPP', 'V_NORMALP', 'V_ARRAYPP', 'V_ARRAYP',
-    'V_ARRAYPPP', 'DIMEN', 'A_INIT', 'OTRO', 'OPER_AP', 'OPER_LP', 'OPER_COMPOU', 'OPER_COMPOUP', 'PARAMS', 
-    'BLOCKS', 'N_CASEP', 'DO_WHILEP', 'FOR_CONDP', 'FUNCP', 'RETURNP', 'VALOR_ASIG' 
+    'V_ARRAYPPP', 'DIMEN', 'A_INIT', 'OTRO', 'OPER_AP', 'OPER_LP', 'OPER_BP', 'OPER_COMPOU', 'OPER_COMPOUP', 'OPER_COMPOUPP', 'PARAMS', 
+    'PARAMSP', 'BLOCKS', 'N_CASEP', 'DO_WHILEP', 'FOR_CONDP', 'FUNCP', 'RETURNP', 'VALOR_ASIG' 
 ]
 term = ['t_lib', 't_string', 't_brace_o', 't_brace_c', 't_bracket_o', 't_bracket_c', 't_parenthesis_o',
     't_parenthesis_c', 't_sharp', 't_comma', 't_dot', 't_semi_colon', 't_question', 't_colon', 't_mod_equals',
@@ -284,7 +286,7 @@ prod = [
     ('VALOR', ['t_true']),
     ('VALOR', ['t_false']),
     ('ASIGNACION', ['t_identifier', 't_assigment', 'VALOR_ASIG', 't_semi_colon']),
-    ('VALOR_ASIG', ['OPER']),
+    #('VALOR_ASIG', ['OPER']),
     ('VALOR_ASIG', ['VALOR']),
     ('VALOR_ASIG', ['FUNC_CALL']),
     ('VALOR_ASIG', ['t_identifier']),
@@ -348,7 +350,7 @@ prod = [
     ('COMPOUND_OPER', ['t_bit_or_equals']),
     ('COMP_ARIT', ['t_plus_plus']),
     ('COMP_ARIT', ['t_sub_sub']),
-    ('FUNC_CALL', ['t_ident', 't_parenthesis_o', 'PARAMS', 't_parenthesis_c']),
+    ('FUNC_CALL', ['t_identifier', 't_parenthesis_o', 'PARAMS', 't_parenthesis_c']),
     ('PARAMS', ['t_identififier', 'PARAMSP']),
     ('PARAMS', ['VALOR_ASIG', 'PARAMSP']),
     ('PARAMS', ['ε']),
@@ -391,6 +393,23 @@ prod = [
     ('FOR_INC', ['OPER_COMPOU']),
     ('FOR_INC', ['OPER_A', 'FOR_INC']),
     ('FOR_INC', ['ε']),
+    #FUNCIONES
+    ('FUNC', ['TIPO', 't_identifier', 't_parenthesis_o', 'PARAMS', 't_parenthesis_c', 'FUNCP']),
+    ('FUNCP', ['t_semi_colon']),
+    ('FUNCP', ['t_brace_o', 'L_BLOQUES', 'RETURN', 't_brace_c']),
+    ('RETURN', ['t_return', 'RETURNP']),
+    ('RETURN', ['ε']),
+    ('RETURNP', ['VALOR_ASIG', 't_semi_colon']),
+    ('RETURNP', ['t_semi_colon']),
+    #PREPROCESADOR
+    ('PRE_PRO', ['DEFINE']),
+    ('PRE_PRO', ['INCLUDE']),
+    ('DEFINE', ['t_sharp', 't_define', 't_ident', 'TOK_REMP']),
+    ('TOK_REMP', ['t_identifier']),
+    ('TOK_REMP', ['VALOR']),
+    ('TOK_REMP', ['OPER']),
+    ('INCLUDE', ['t_sharp', 't_include', 't_lib']),
+
 ]
 
 def openFile(file_name):
@@ -408,6 +427,8 @@ if __name__ == "__main__":
         exit(-1)
     #lexer = Scanner(rules, buffer)
     grammar = Grammar(no_term, term, 'PROGRAMA', prod)
+    for predic in grammar.predic :
+        print(predic)
     print(grammar.isLL1())
     #parser = Parser(lexer, grammar)
     #parser.analyze()
