@@ -169,7 +169,7 @@ class Parser():
                         if a is None : break
                         a = lexer.stackPeek()
                 else :
-                    log += 'Se encontro : {} pero se esperaba {}'.format(a.type, A)
+                    log += '\n[ERROR]> Se encontro : {} pero se esperaba {}'.format(a.type, A)
                     break
             else :
                 production = self.grammar.table[A][a.type]
@@ -216,8 +216,95 @@ prod = [
     ('F',   ['t_id']),
 ]
 '''
+rules = [ 
+    ('((\/\*[\s\S]*?\*\/)|(\/\/+((.)*)+\n))',                                   't_comment'),
+    ('((\<\w*.h\>)|(\"\w*.h\"))',                                               't_lib'),
+    ('(\"((.)*)\")',                                                            't_string'),
+    ('\{',                                                                      't_brace_o'),
+    ('\}',                                                                      't_brace_c'),
+    ('\[',                                                                      't_bracket_o'),
+    ('\]',                                                                      't_bracket_c'),
+    ('\(',                                                                      't_parenthesis_o'),
+    ('\)',                                                                      't_parenthesis_c'),
+    ('\#',                                                                      't_sharp'),
+    ('\,',                                                                      't_comma'),
+    ('\.',                                                                      't_dot'),
+    ('\;',                                                                      't_semi_colon'),
+    ('\?',                                                                      't_question'),
+    ('\:',                                                                      't_colon'),
+    ('\%\=',                                                                    't_mod_equals'),
+    ('\%',                                                                      't_mod'),
+    ('\*\=',                                                                    't_multiply_equals'),
+    ('\*',                                                                      't_asterisk'),
+    ('\+\+',                                                                    't_plus_plus'),
+    ('\+\=',                                                                    't_plus_equals'),
+    ('\+',                                                                      't_plus'),
+    ('\-\-',                                                                    't_sub_sub'),
+    ('\-\=',                                                                    't_sub_equals'),
+    ('\-',                                                                      't_sub'),
+    ('\/\=',                                                                    't_divide_equals'),
+    ('\/',                                                                      't_divide'),
+    ('\=\=',                                                                    't_comparation'),
+    ('\=',                                                                      't_assigment'),
+    ('\!\=',                                                                    't_diferent_to'),
+    ('\!',                                                                      't_not'),
+    ('\<\<',                                                                    't_left_desp'),
+    ('\<\=',                                                                    't_less_equals'),
+    ('\<',                                                                      't_less'),
+    ('\>\>',                                                                    't_rigth_desp'),
+    ('\>\=',                                                                    't_great_equals'),
+    ('\>',                                                                      't_great'),
+    ('\&\&',                                                                    't_and'),
+    ('\&\=',                                                                    't_bit_and_equals'),
+    ('\&',                                                                      't_ampersand'),
+    ('\|\|',                                                                    't_or'),
+    ('\|\|',                                                                    't_bit_or'),
+    ('\|\=',                                                                    't_bit_or_equals'),
+    ('\^\=',                                                                    't_bit_xor_equals'),
+    ('\^',                                                                      't_bit_xor'),
+    ('\~\=',                                                                    't_c1_equals'),
+    ('\~',                                                                      't_c1'),
+    ('bool',                                                                    't_kw_bool'),
+    ('byte',                                                                    't_kw_byte'),
+    ('char',                                                                    't_kw_char'),
+    ('t_double',                                                                't_kw_double'),
+    ('float',                                                                   't_kw_float'),
+    ('int',                                                                     't_kw_int'),
+    ('long',                                                                    't_kw_long'),
+    ('short',                                                                   't_kw_short'),
+    ('unsigned',                                                                't_kw_unsigned'),
+    ('string',                                                                  't_kw_string'),
+    ('void',                                                                    't_kw_void'),
+    ('word',                                                                    't_kw_word'),
+    ('define',                                                                  't_define'),
+    ('include',                                                                 't_include'),
+    ('HIGH',                                                                    't_HIGH'),
+    ('LOW',                                                                     't_LOW'),
+    ('INPUT_PULLUP',                                                            't_INPUT_PULLUP'),
+    ('INPUT',                                                                   't_INPUT'),
+    ('OUTPUT',                                                                  't_OUTPUT'),
+    ('LED_BUILTIN',                                                             't_LED_BUILTIN'),
+    ('break',                                                                   't_break'),
+    ('continue',                                                                't_continue'),
+    ('do',                                                                      't_do'),
+    ('while',                                                                   't_while'),
+    ('else',                                                                    't_else'),
+    ('for',                                                                     't_for'),
+    ('if',                                                                      't_if'),
+    ('return',                                                                  't_return'),
+    ('switch',                                                                  't_switch'),
+    ('case',                                                                    't_case'),
+    ('default',                                                                 't_default'),
+    ('true',                                                                    't_bool'),
+    ('false',                                                                   't_bool'),
+    ('(((\d+)(\.)(\d+)(f)?)|((\d+)(E)(\-|\+)(\d)))',                            't_float'),
+    ('((((0)(((x([abcdefABCDEF]|\d){1,8}))|(b([01]+))))|(\d+))(l|L)?(u|U)?)',   't_int'),
+    ('(\'.\')',                                                                 't_char'),
+    ('(((\_)*[a-zA-Z0-9]*)+)',                                                  't_identifier'),
+    ('(.)', 'OTHER'),
+]
 
-no_term = ['PROGRAMA', 'L_BLOQUES', 'BLOQUE', 'VAR', 'CONTROL', 'REPETICION', 'OPER', 'FUNC', 
+no_term = ['PROGRAMA', 'L_BLOQUES', 'L_BLOQUESP', 'BLOQUE', 'VAR', 'CONTROL', 'REPETICION', 'OPER', 'FUNC', 
     'PRE_PRO', 'V_NORMAL', 'V_ARRAY', 'TIPO', 'ASIGNACION', 'VALOR', 'FUNC_CALL', 'OPER_A',
     'OPER_L', 'OPER_B', 'ARIT_OPER', 'LOGIC_OPER', 'COMPOUND_OPER', 'COMP_ARIT', 'IF', 
     'IF_ELIF', 'IF_ELSE', 'SWITCH', 'N_CASE', 'CASE', 'DEFAULT', 'DO_WHILE', 'WHILE', 'FOR', 'FOR_ASIG', 'FOR_COND',
@@ -239,8 +326,9 @@ term = ['t_lib', 't_string', 't_brace_o', 't_brace_c', 't_bracket_o', 't_bracket
 prod = [
     ('PROGRAMA', ['L_BLOQUES']),
     #GENERALES
-    ('L_BLOQUES', ['BLOQUE', 'L_BLOQUES']),
-    ('L_BLOQUES', ['ε']),
+    ('L_BLOQUES', ['BLOQUE', 'L_BLOQUESP']),
+    ('L_BLOQUESP', ['L_BLOQUES']),
+    ('L_BLOQUESP', ['ε']),
     ('BLOQUE', ['VAR']),
     ('BLOQUE', ['CONTROL']),
     ('BLOQUE', ['REPETICION']),
@@ -426,16 +514,18 @@ if __name__ == "__main__":
     if buffer is None:
         print('Error de lectura de archivo')
         exit(-1)
-    #lexer = Scanner(rules, buffer)
+    lexer = Scanner(rules, buffer)
     grammar = Grammar(no_term, term, 'PROGRAMA', prod)
+    '''
     for non_term in grammar.N:
         print('Primeros de {} : {}'.format(non_term, grammar.first[non_term]))
     print('-------------------------------')
     for predic in grammar.predic :
         print(predic)
     print(grammar.isLL1())
-    #parser = Parser(lexer, grammar)
-    #parser.analyze()
+    '''
+    parser = Parser(lexer, grammar)
+    parser.analyze()
 
 
 
