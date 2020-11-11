@@ -230,9 +230,9 @@ term = ['t_lib', 't_string', 't_brace_o', 't_brace_c', 't_bracket_o', 't_bracket
     't_mod', 't_multiply_equals', 't_asterisk', 't_plus_plus', 't_plus_equals', 't_plus', 't_sub_sub',
     't_sub_equals', 't_sub', 't_divide_equals', 't_divide', 't_comparation', 't_assigment', 't_diferent_to',
     't_not', 't_left_desp', 't_less_equals', 't_less', 't_rigth_desp', 't_great_equals', 't_great', 't_and', 
-    't_ampersand', 't_or', 't_bit_or', 't_bit_xor_equals', 't_bit_xor', 't_c1_equals', 't_c1', 't_bool', 
-    't_byte', 't_char', 't_double', 't_float', 't_int', 't_long', 't_short', 't_unsigned', 't_string', 't_void',
-    't_word', 't_define', 't_include', 't_HIGH', 't_LOW', 't_INPUT_PULLUP', 't_INPUT', 't_OUTPUT', 't_LED_BUILTIN',
+    't_ampersand', 't_or', 't_bit_or', 't_bit_xor_equals', 't_bit_xor', 't_c1_equals', 't_c1', 't_wk_bool', 
+    't_kw_byte', 't_kw_char', 't_kw_double', 't_kw_float', 't_kw_int', 't_kw_long', 't_kw_short', 't_kw_unsigned', 't_kw_string', 't_kw_void',
+    't_kw_word', 't_define', 't_include', 't_HIGH', 't_LOW', 't_INPUT_PULLUP', 't_INPUT', 't_OUTPUT', 't_LED_BUILTIN',
     't_break', 't_continue', 't_do', 't_while', 't_else', 't_for', 't_if', 't_return', 't_switch', 't_case', 't_default',
     't_true', 't_false', 't_float', 't_int', 't_char', 't_identifier'
 ]
@@ -261,7 +261,8 @@ prod = [
     ('V_ARRAYPPP', ['t_assigment', 'PARAMS', 't_semi_colon', 'V_ARRAYP']),
     ('V_ARRAYP', ['t_comma', 'V_ARRAY', 't_semi_colon', 'V_ARRAYP']),
     ('V_ARRAYP', ['ε']),
-    ('DIMEN', ['t_']),
+    ('DIMEN', ['t_bracket_o', 't_int', 't_bracket_c', 'DIMEN']),
+    ('DIMEN', ['ε']),
     ('A_INIT', ['t_brace_o', 'A_INIT', 't_brace_c']),
     ('A_INIT', ['VALOR_ASIG', 't_comma', 'A_INIT']),
     ('A_INIT', ['t_semi_colon']),
@@ -367,7 +368,7 @@ prod = [
     ('IF_ELIF', ['IF', 't_if', 't_else ', 't_parenthesis_o', 'OPER_L', 't_parenthesis_c', 'BLOCKS']),
     ('IF_ELSE', ['IF', 't_else ', 'BLOQUE']),
     ('IF_ELSE', ['IF_ELIF', 't_else', 't_parenthesis_o', 'L_BLOQUES', 't_parenthesis_c']),
-    ('SWITCH', ['t_swich', 't_parenthesis_o', 'VALOR_ASIG', 't_parenthesis_c', 't_brace_o', 'N_CASE',  'DEFAULT', 't_brace_c']),
+    ('SWITCH', ['t_switch', 't_parenthesis_o', 'VALOR_ASIG', 't_parenthesis_c', 't_brace_o', 'N_CASE',  'DEFAULT', 't_brace_c']),
     ('N_CASE', ['CASE', 'N_CASEP']),
     ('N_CASEP', ['N_CASE']),
     ('N_CASEP', ['ε']),
@@ -427,6 +428,9 @@ if __name__ == "__main__":
         exit(-1)
     #lexer = Scanner(rules, buffer)
     grammar = Grammar(no_term, term, 'PROGRAMA', prod)
+    for non_term in grammar.N:
+        print('Primeros de {} : {}'.format(non_term, grammar.first[non_term]))
+    print('-------------------------------')
     for predic in grammar.predic :
         print(predic)
     print(grammar.isLL1())
