@@ -216,12 +216,12 @@ prod = [
 '''
 
 no_term = ['PROGRAMA', 'L_BLOQUES', 'BLOQUE', 'VAR', 'CONTROL', 'REPETICION', 'OPER', 'FUNC', 
-    'PRE_PRO', 'V_NORMAL', 'V_ARRAY', 'TIPO', 'ASIGNACION', 'PARAMS', 'VALOR', 'FUNC_CALL', 'OPER_A',
+    'PRE_PRO', 'V_NORMAL', 'V_ARRAY', 'TIPO', 'ASIGNACION', 'VALOR', 'FUNC_CALL', 'OPER_A',
     'OPER_L', 'OPER_B', 'OPER_COMPOU', 'ARIT_OPER', 'LOGIC_OPER', 'COMPOUND_OPER', 'COMP_ARIT', 'IF', 
     'IF_ELIF', 'IF_ELSE', 'SWITCH', 'N_CASE', 'CASE', 'DEFAULT', 'DO_WHILE', 'FOR', 'FOR_ASIG', 'FOR_COND',
     'FOR_INC', 'RETURN', 'DEFINE', 'INCLUDE', 'TOK_REMP', 'V_NORMALPP', 'V_NORMALP', 'V_ARRAYPP', 'V_ARRAYP',
     'V_ARRAYPPP', 'DIMEN', 'A_INIT', 'OTRO', 'OPER_AP', 'OPER_LP', 'OPER_COMPOU', 'OPER_COMPOUP', 'PARAMS', 
-    'BLOCKS', 'N_CASEP', 'DO_WHILEP', 'FOR_CONDP', 'FUNCP', 'RETURNP' 
+    'BLOCKS', 'N_CASEP', 'DO_WHILEP', 'FOR_CONDP', 'FUNCP', 'RETURNP', 'VALOR_ASIG' 
 ]
 term = ['t_lib', 't_string', 't_brace_o', 't_brace_c', 't_bracket_o', 't_bracket_c', 't_parenthesis_o',
     't_parenthesis_c', 't_sharp', 't_comma', 't_dot', 't_semi_colon', 't_question', 't_colon', 't_mod_equals',
@@ -355,7 +355,24 @@ prod = [
     ('PARAMSP', ['t_comma','PARAMS', 'PARAMSP']),
     ('PARAMSP', ['ε']),
     #ESTRUCTURAS DE CONTROL
-    
+    ('CONTROL', ['IF']),
+    ('CONTROL', ['IF_ELIF']),
+    ('CONTROL', ['IF_ELSE']),
+    ('CONTROL', ['SWITCH']),
+    ('IF', ['t_if', 't_parenthesis_o', 'OPER_L', 't_parenthesis_c', 'BLOCKS']),
+    ('BLOCKS', ['BLOQUE']),
+    ('BLOCKS', ['t_brace_o', 'L_BLOQUES', 't_brace_c']),
+    ('IF_ELIF', ['IF', 't_if', 't_else ', 't_parenthesis_o', 'OPER_L', 't_parenthesis_c', 'BLOCKS']),
+    ('IF_ELSE', ['IF', 't_else ', 'BLOQUE']),
+    ('IF_ELSE', ['IF_ELIF', 't_else', 't_parenthesis_o', 'L_BLOQUES', 't_parenthesis_c']),
+    ('SWITCH', ['t_swich', 't_parenthesis_o', 'VALOR_ASIG', 't_parenthesis_c', 't_brace_o', 'N_CASE',  'DEFAULT', 't_brace_o']),
+    ('N_CASE', ['CASE', 'N_CASEP']),
+    ('N_CASEP', ['N_CASE']),
+    ('N_CASEP', ['ε']),
+    ('CASE', ['t_case', 'VALOR_ASIG', 't_colon', 'L_BLOQUES', 't_break', 't_semi_colon' ]),
+    ('DEFAULT', ['t_default', 't_colon', 'L_BLOQUES']),
+    ('DEFAULT', ['ε']),
+    #ESTRUCTURAS DE CONTROL
 ]
 
 def openFile(file_name):
