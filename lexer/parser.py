@@ -304,7 +304,7 @@ rules = [
     ('(.)', 'OTHER'),
 ]
 
-no_term = ['PROGRAMA', 'L_BLOQUES', 'L_BLOQUESP', 'BLOQUE', 'VAR', 'CONTROL', 'REPETICION', 'OPER', 'FUNC', 
+no_term = ['PROGRAMA', 'L_BLOQUES', 'L_BLOQUESP', 'BLOQUE', 'VAR_FUNC', 'VAR', 'CONTROL', 'REPETICION', 'OPER', 'FUNC', 
     'PRE_PRO', 'V_NORMAL', 'V_ARRAY', 'TIPO', 'ASIGNACION', 'VALOR', 'FUNC_CALL', 'OPER_A',
     'OPER_L', 'OPER_B', 'ARIT_OPER', 'LOGIC_OPER', 'COMPOUND_OPER', 'COMP_ARIT', 'IF', 
     'IF_ELIF', 'IF_ELSE', 'SWITCH', 'N_CASE', 'CASE', 'DEFAULT', 'DO_WHILE', 'WHILE', 'FOR', 'FOR_ASIG', 'FOR_COND',
@@ -329,11 +329,11 @@ prod = [
     ('L_BLOQUES', ['BLOQUE', 'L_BLOQUESP']),
     ('L_BLOQUESP', ['L_BLOQUES']),
     ('L_BLOQUESP', ['ε']),
-    ('BLOQUE', ['VAR']),
+    ('BLOQUE', ['VAR_FUNC']),
     ('BLOQUE', ['CONTROL']),
     ('BLOQUE', ['REPETICION']),
-    ('BLOQUE', ['FUNC']),
     ('BLOQUE', ['PRE_PRO']),
+    ('VAR_FUNC ', ['PRE_PRO']),
     #VARIABLES
     ('VAR', ['V_NORMAL']),
     ('VAR', ['V_ARRAY']),
