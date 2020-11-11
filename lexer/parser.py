@@ -349,6 +349,12 @@ prod = [
     ('COMP_ARIT', ['t_plus_plus']),
     ('COMP_ARIT', ['t_sub_sub']),
     ('FUNC_CALL', ['t_ident', 't_parenthesis_o', 'PARAMS', 't_parenthesis_c']),
+    ('PARAMS', ['t_identififier', 'PARAMSP']),
+    ('PARAMS', ['VALOR_ASIG', 'PARAMSP']),
+    ('PARAMS', ['ε']),
+    ('PARAMSP', ['t_comma','PARAMS', 'PARAMSP']),
+    ('PARAMSP', ['ε']),
+    #ESTRUCTURAS DE CONTROL
     
 ]
 
