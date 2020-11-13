@@ -29,9 +29,11 @@ class Scanner():
         self.id = 1
         self.regular_expresions_groups = []
         self.group_types = {}
+        self.buffer = buffer
         self.initRegex(regular_expresions)
         self.position = 0
-        self.buffer = buffer
+        self.column = 0;
+        self.line = 0;
         self.initTokenStack()
 
         
@@ -48,17 +50,26 @@ class Scanner():
         
         self.regex = re.compile('|'.join(self.regular_expresions_groups))
         self.re_white_spaces_skip = re.compile('\S')
+        self.re_line_break = re.compile('\n')
     
     def getToken(self):
         if self.position >= len(self.buffer):
             return None
         else :
+            match = self.re_line_break.search(self.buffer, self.position)
+            if match:
+                self.column = 0
+                self.line += 1
+            else :
+                return None
             match = self.re_white_spaces_skip.search(self.buffer, self.position)
             if match:
+                self.column = match.start() - self.position
                 self.position = match.start()
             else :
                 return None
-            match = self.regex.match(self.buffer, self.position)
+            #match = self.regex.match(self.buffer, self.position)
+            match = self.regex.match(self.buffer, (self.line, self.column))
             if match:
                 group_name = match.lastgroup
                 t_type = self.group_types[group_name]
