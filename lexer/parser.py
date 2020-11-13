@@ -305,10 +305,10 @@ rules = [
 ]
 
 no_term = ['PROGRAMA', 'L_BLOQUES', 'L_BLOQUESP', 'BLOQUE', 'VAR_FUNC', 'VAR', 'CONTROL', 'REPETICION', 'OPER', 'FUNC', 
-    'PRE_PRO', 'V_NORMAL', 'V_ARRAY', 'TIPO', 'ASIGNACION', 'VALOR', 'FUNC_CALL', 'OPER_A',
-    'OPER_L', 'OPER_B', 'ARIT_OPER', 'LOGIC_OPER', 'COMPOUND_OPER', 'COMP_ARIT', 'IF', 
-    'IF_ELIF', 'IF_ELSE', 'SWITCH', 'N_CASE', 'CASE', 'DEFAULT', 'DO_WHILE', 'WHILE', 'FOR', 'FOR_ASIG', 'FOR_COND',
-    'FOR_INC', 'RETURN', 'DEFINE', 'INCLUDE', 'TOK_REMP', 'V_NORMALPP', 'V_NORMALP', 'V_ARRAYPP', 'V_ARRAYP',
+    'PRE_PRO', 'V_NORMAL', 'V_ARRAY', 'TIPO', 'ASIGNACION', 'VALOR', 'FUNC_CALL', 'OPER_A', 'OPER_ALB', 'ASIGN_ID', 'ASIGN', 'OPER_APP',
+    'OPER_L', 'OPER_B', 'ARIT_OPER', 'LOGIC_OPER', 'COMPOUND_OPER', 'COMP_ARIT', 'IF', 'VALOR_ASIGP', 'FUNC_CALL_NIDENT', 'FUNC_IDENT',
+    'IF_ELIF', 'IF_ELSE', 'SWITCH', 'N_CASE', 'CASE', 'DEFAULT', 'DO_WHILE', 'WHILE', 'FOR', 'FOR_ASIG', 'FOR_COND', 'VAL_ORID', 'OPER_LPP',
+    'FOR_INC', 'RETURN', 'DEFINE', 'INCLUDE', 'TOK_REMP', 'V_NORMALPP', 'V_NORMALP', 'V_ARRAYPP', 'V_ARRAYP', 'FOR_CONDPP', 'STATEMENT',
     'V_ARRAYPPP', 'DIMEN', 'A_INIT', 'OTRO', 'OPER_AP', 'OPER_LP', 'OPER_BP', 'OPER_COMPOU', 'OPER_COMPOUP', 'OPER_COMPOUPP', 'PARAMS', 
     'PARAMSP', 'BLOCKS', 'N_CASEP', 'DO_WHILEP', 'FOR_CONDP', 'FUNCP', 'RETURNP', 'VALOR_ASIG', 'COMP_OPER', 'BITE_OPER', 'V_NORMALASIG', 'V_ARRAYFORM', 'VAR_FUNCP' 
 ]
@@ -330,19 +330,21 @@ prod = [
     ('L_BLOQUESP', ['L_BLOQUES']),
     ('L_BLOQUESP', ['ε']),
     ('BLOQUE', ['VAR_FUNC']),
+    ('BLOQUE', ['STATEMENT']),
     ('BLOQUE', ['CONTROL']),
     ('BLOQUE', ['REPETICION']),
     ('BLOQUE', ['PRE_PRO']),
     ('VAR_FUNC', ['TIPO', 't_identifier', 'VAR_FUNCP']),
     ('VAR_FUNCP', ['VAR']),
     ('VAR_FUNCP', ['FUNC']),
+    
     #VARIABLES
     ('VAR', ['V_NORMAL']),
     ('VAR', ['V_ARRAY']),
     ('V_NORMAL', ['t_semi_colon']),
     ('V_NORMAL', ['t_comma', 'V_NORMALP']),
     ('V_NORMAL', ['V_NORMALASIG', 'V_NORMALPP']),
-    ('V_NORMALPP', ['V_NORMALP']),
+    ('V_NORMALPP', ['t_comma','V_NORMALP']),
     ('V_NORMALPP', ['t_semi_colon']),
     ('V_NORMALASIG', ['t_assigment', 'VALOR_ASIG']),
     ('V_NORMALP', ['t_identifier','V_NORMAL']),
@@ -350,7 +352,6 @@ prod = [
     ('V_ARRAY', ['V_ARRAYFORM', 'V_ARRAYP']),
     ('V_ARRAYP', ['t_assigment', 'PARAMS', 't_semi_colon']),
     ('V_ARRAYP', ['t_semi_colon']),
-
     ('V_ARRAYFORM', ['t_bracket_o', 't_int', 't_bracket_c']),
 
     #TIPO DE DATOS
@@ -372,33 +373,52 @@ prod = [
     ('VALOR', ['t_int']),
     ('VALOR', ['t_true']),
     ('VALOR', ['t_false']),
-    ('ASIGNACION', ['t_identifier', 't_assigment', 'VALOR_ASIG', 't_semi_colon']),
-    #('VALOR_ASIG', ['OPER']),
+
+    ('ASIGNACION', ['t_identifier', 'ASIGN_ID']),
+    ('ASIGN_ID', ['ASIGN']),
+    ('ASIGN_ID', ['COMP_ARIT']),
+    ('ASIGN', ['t_assigment', 'VALOR_ASIG']),
+    ('VALOR_ASIG', ['OPER']),
     ('VALOR_ASIG', ['VALOR']),
     ('VALOR_ASIG', ['FUNC_CALL']),
-    ('VALOR_ASIG', ['t_identifier']),
+
+    ('VAL_ORID', ['VALOR']),
+    ('VAL_ORID', ['t_identifier']),
+    ('FUNC_IDENT', ['ε']),
+    #('FUNC_IDENT', ['FUNC_CALL_NIDENT']),
+    #STATEMENTS
+    ('STATEMENT', ['ASIGNACION', 't_semi_colon']),
     #OPERACIONES
-    ('OPER', ['OPER_A']),
-    ('OPER', ['OPER_L']),
-    ('OPER', ['OPER_B']),
-    ('OPER', ['OPER_COMPOU']),
-    ('OPER_A', ['t_parenthesis_o', 'OPER_A', 't_parenthesis_c']),
-    ('OPER_A', ['VALOR', 'OPER_AP']),
-    ('OPER_A', ['VALOR_ASIG', 'OPER_AP']),
-    ('OPER_AP', ['ARIT_OPER', 'OPER_A', 'OPER_AP']),
-    ('OPER_AP', ['ε']),
-    ('OPER_L', ['LOGIC_OPER', 'OPER_L', 'OPER_LP']),
-    ('OPER_L', ['t_parenthesis_o', 'OPER_L', 't_parenthesis_c', 'OPER_LP']),
-    ('OPER_L', ['VALOR', 'OPER_LP']),
-    ('OPER_L', ['VALOR_ASIG', 'OPER_LP']),
-    ('OPER_LP', ['COMP_OPER', 'OPER_L', 'OPER_LP']),
-    ('OPER_LP', ['LOGIC_OPER', 'OPER_L', 'OPER_LP']),
-    ('OPER_LP', ['ε']),
-    ('OPER_B', ['t_parenthesis_o', 'OPER_B', 't_parenthesis_c', 'OPER_BP']),
-    ('OPER_B', ['VALOR', 'OPER_BP']),
-    ('OPER_B', ['VALOR_ASIG', 'OPER_BP']),
+    ('OPER', ['OPER_ALB']),
+    ('OPER', ['OPER_ALB']),
+    ('OPER', ['OPER_ALB']),
+    #('OPER', ['OPER_COMPOU']),
+    ('OPER', ['t_parenthesis_o', 'OPER_ALB', 't_parenthesis_c']),
+    
+    #('OPER_ALB', ['VAL_ORID', 'OPER_TYPE']),
+    #('OPER_TYPE', ['VAL_ORID', 'OPER_TYPE']),
+
+    ('OPER_ALB', ['OPER_A']),
+    ('OPER_ALB', ['OPER_L']),
+    ('OPER_ALB', ['OPER_B']),
+    ('OPER_A', ['VAL_ORID', '']),
+    ('OPER_A', ['VAL_ORID', 'OPER_AP']),
+    ('OPER_AP', ['ARIT_OPER','OPER_APP']),
+    ('OPER_AP', ['COMPOUND_OPER','OPER_APP']),
+    ('OPER_APP', ['OPER_A']),
+    ('OPER_APP', ['VAL_ORID']),
+
+    ('OPER_L', ['t_not', 'OPER_L']),
+    ('OPER_L', ['VAL_ORID', 'OPER_LP']),
+    ('OPER_LP', ['COMP_OPER', 'OPER_LPP']),
+    ('OPER_LP', ['LOGIC_OPER', 'OPER_LPP']),
+    ('OPER_LPP', ['OPER_L']),
+    ('OPER_LPP', ['VAL_ORID']),
+
+    ('OPER_B', ['VAL_ORID', 'OPER_BP']),
     ('OPER_BP', ['BITE_OPER', 'OPER_B', 'OPER_BP']),
     ('OPER_BP', ['ε']),
+
     ('OPER_COMPOU', ['t_identifier', 'OPER_COMPOUP']),
     ('OPER_COMPOU', ['VALOR']),
     ('OPER_COMPOU', ['VALOR_ASIG']),
@@ -406,6 +426,7 @@ prod = [
     ('OPER_COMPOUP', ['COMP_ARIT']),
     ('OPER_COMPOUPP', ['OPER_A']),
     ('OPER_COMPOUPP', ['OPER_COMPOU']),
+    
     ('ARIT_OPER', ['t_plus']),
     ('ARIT_OPER', ['t_sub']),
     ('ARIT_OPER', ['t_asterisk']),
@@ -437,12 +458,15 @@ prod = [
     ('COMPOUND_OPER', ['t_bit_or_equals']),
     ('COMP_ARIT', ['t_plus_plus']),
     ('COMP_ARIT', ['t_sub_sub']),
+
     ('FUNC_CALL', ['t_identifier', 't_parenthesis_o', 'PARAMS', 't_parenthesis_c']),
+    ('FUNC_CALL_NIDENT', ['t_parenthesis_o', 'PARAMS', 't_parenthesis_c']),
+
     ('PARAMS', ['t_identifier', 'PARAMSP']),
     ('PARAMS', ['VALOR_ASIG', 'PARAMSP']),
-    ('PARAMS', ['ε']),
     ('PARAMSP', ['t_comma','PARAMS', 'PARAMSP']),
     ('PARAMSP', ['ε']),
+    
     #ESTRUCTURAS DE CONTROL
     ('CONTROL', ['IF']),
     ('CONTROL', ['IF_ELIF']),
@@ -462,6 +486,7 @@ prod = [
     ('DEFAULT', ['t_default', 't_colon', 'L_BLOQUES']),
     ('DEFAULT', ['ε']),
     #ESTRUCTURAS DE REPETICION
+    
     ('REPETICION', ['DO_WHILE']),
     ('REPETICION', ['WHILE']),
     ('REPETICION', ['FOR']),
@@ -469,14 +494,17 @@ prod = [
     ('DO_WHILEP', ['BLOQUE', 't_while', 't_parenthesis_o', 'OPER_L', 't_parenthesis_c', 't_semi_colon']),
     ('DO_WHILEP', ['t_brace_o', 'L_BLOQUES','t_brace_c','t_while', 't_parenthesis_o', 'OPER_L', 't_parenthesis_c', 't_semi_colon']),
     ('WHILE', ['t_while', 't_parenthesis_o', 'OPER_L', 't_parenthesis_c', 'BLOCKS']),
-    ('FOR', ['t_for', 't_parenthesis_o', 'FOR_ASIG', 't_semi_colon', 'FOR_COND', 't_semi_colon', 'FOR_INC', 't_parenthesis_o', 'BLOCKS']),
-    ('FOR_ASIG', ['VAR']),
-    ('FOR_ASIG', ['ASIGNACION' , 'FOR_ASIG']),
-    ('FOR_ASIG', ['ε']),
-    ('FOR_COND', ['OPER_L', 'FOR_CONDP']),
-    ('FOR_COND', ['ε']),
-    ('FOR_CONDP', ['OPER_L']),
-    ('FOR_CONDP', ['OPER_L', 'FOR_CONDP']),
+    ('FOR', ['t_for', 't_parenthesis_o', 'ASIGNACION', 't_semi_colon', 'OPER_L', 't_semi_colon', 'ASIGNACION', 't_parenthesis_c', 'BLOCKS']),
+    #('FOR_ASIG', ['VAR']),
+    #('FOR_ASIG', ['ASIGNACION' , 'FOR_ASIG']),
+    ('FOR_ASIG', ['ASIGNACION']),
+    #('FOR_ASIG', ['ε']),
+    #('FOR_COND', ['OPER_L', 'FOR_CONDP']),
+    #('FOR_COND', ['ε']),
+    #('FOR_CONDP', ['OPER_L', 'FOR_CONDPP']),
+    #('FOR_CONDPP', ['FOR_CONDP']),
+    #('FOR_CONDPP', ['ε']),
+    ('FOR_COND', ['OPER_L']),
     ('FOR_INC', ['OPER_COMPOU']),
     ('FOR_INC', ['OPER_A', 'FOR_INC']),
     ('FOR_INC', ['ε']),
@@ -496,8 +524,8 @@ prod = [
     ('TOK_REMP', ['VALOR']),
     ('TOK_REMP', ['OPER']),
     ('INCLUDE', ['t_sharp', 't_include', 't_lib']),
-
-]
+    
+    ]
 
 def openFile(file_name):
     if file_name.endswith('.ino'):
