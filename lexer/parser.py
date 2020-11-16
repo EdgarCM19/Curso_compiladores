@@ -125,22 +125,24 @@ class Grammar():
     #print(str(self.table))
 
     def saveTable(self):
-        with open('tabla.txt', 'w') as file:
+        with open('tabla.txt', 'w', encoding='utf-8') as file:
             cad = '[N/T]'
-            cad += ' | '.join(self.T + ['$']) + '\n'
+            cad += ' , '.join(self.T + ['$']) + '\n'
             #print(cad)
             for n_t in self.N:
-                cad += n_t 
+                cad += n_t +','
                 for t in self.T + ['$']:
-                    cad += '| {} |'.format(self.table[n_t][t])
+                    cad += ' {} ,'.format(self.table[n_t][t])
                 cad += '\n'
-            print(cad)
+            #file.write(cad)
+            #print(cad)
 
     def initTable(self):
         self.firstfun()
         self.follows()
         self.predicfun()
         self.createTable()
+        #self.saveTable()
 class Parser():
 
     def __init__(self, lexer: Scanner, grammar : Grammar):
@@ -304,13 +306,14 @@ rules = [
     ('(.)', 'OTHER'),
 ]
 
-no_term = ['PROGRAMA', 'L_BLOQUES', 'L_BLOQUESP', 'BLOQUE', 'VAR_FUNC', 'VAR', 'CONTROL', 'REPETICION', 'OPER', 'FUNC', 'OPER_TYPE', 'FUNCDEC',
-    'PRE_PRO', 'V_NORMAL', 'V_ARRAY', 'TIPO', 'ASIGNACION', 'VALOR', 'FUNC_CALL', 'OPER_A', 'OPER_ALB', 'ASIGN_ID', 'ASIGN', 'OPER_APP', 'FUNCPAR',
-    'OPER_L', 'OPER_B', 'ARIT_OPER', 'LOGIC_OPER', 'COMPOUND_OPER', 'COMP_ARIT', 'IF', 'VALOR_ASIGP', 'FUNC_CALL_NIDENT', 'FUNC_IDENT', 'FUNCNOPAR',
+no_term = ['PROGRAMA', 'L_BLOQUES', 'L_BLOQUESP', 'BLOQUE', 'VAR_FUNC', 'VAR', 'CONTROL', 'REPETICION', 'OPER', 'FUNC', 'OPER_TYPE', 'FUNCDEC', 'FORDEC', 'FORDECLAR',
+    'PRE_PRO', 'V_NORMAL', 'V_ARRAY', 'TIPO', 'ASIGNACION', 'VALOR', 'FUNC_CALL', 'OPER_A', 'OPER_ALB', 'ASIGN_ID', 'ASIGN', 'OPER_APP', 'FUNCPAR','FORASIG',
+    'OPER_L', 'OPER_B', 'ARIT_OPER', 'LOGIC_OPER', 'COMPOUND_OPER', 'COMP_ARIT', 'IF', 'VALOR_ASIGP', 'FUNC_CALL_NIDENT', 'FUNC_IDENT', 'FUNCNOPAR', 'FUNCDOT',
     'IF_ELIF', 'IF_ELSE', 'SWITCH', 'N_CASE', 'CASE', 'DEFAULT', 'DO_WHILE', 'WHILE', 'FOR', 'FOR_ASIG', 'FOR_COND', 'VAL_ORID', 'OPER_LPP', 'STATEMENTDEC',
     'FOR_INC', 'RETURN', 'DEFINE', 'INCLUDE', 'TOK_REMP', 'V_NORMALPP', 'V_NORMALP', 'V_ARRAYPP', 'V_ARRAYP', 'FOR_CONDPP', 'STATEMENT', 'OPER_AS',
     'V_ARRAYPPP', 'DIMEN', 'A_INIT', 'OTRO', 'OPER_AP', 'OPER_LP', 'OPER_BP', 'OPER_COMPOU', 'OPER_COMPOUP', 'OPER_COMPOUPP', 'PARAMS', 'OPER_LS',
-    'PARAMSP', 'BLOCKS', 'N_CASEP', 'DO_WHILEP', 'FOR_CONDP', 'FUNCP', 'RETURNP', 'VALOR_ASIG', 'COMP_OPER', 'BITE_OPER', 'V_NORMALASIG', 'V_ARRAYFORM', 'VAR_FUNCP' 
+    'PARAMSP', 'BLOCKS', 'N_CASEP', 'DO_WHILEP', 'FOR_CONDP', 'FUNCP', 'RETURNP', 'VALOR_ASIG', 'COMP_OPER', 'BITE_OPER', 'V_NORMALASIG', 'V_ARRAYFORM', 'VAR_FUNCP',
+    'FUNCPDEC', 'FUNCRET', 'FUNCNORET', 'PRE_PRODEC', 'VALASIG_TYPE'
 ]
 term = ['t_lib', 't_string', 't_brace_o', 't_brace_c', 't_bracket_o', 't_bracket_c', 't_parenthesis_o',
     't_parenthesis_c', 't_sharp', 't_comma', 't_dot', 't_semi_colon', 't_question', 't_colon', 't_mod_equals',
@@ -329,6 +332,7 @@ prod = [
     ('L_BLOQUES', ['BLOQUE', 'L_BLOQUESP']),
     ('L_BLOQUESP', ['L_BLOQUES']),
     ('L_BLOQUESP', ['ε']),
+
     ('BLOQUE', ['VAR_FUNC']),
     ('BLOQUE', ['STATEMENT']),
     ('BLOQUE', ['CONTROL']),
@@ -373,68 +377,78 @@ prod = [
     ('VALOR', ['t_int']),
     ('VALOR', ['t_true']),
     ('VALOR', ['t_false']),
-
+    ('VALOR', ['t_INPUT']),
+    ('VALOR', ['t_OUTPUT']),
+    ('VALOR', ['t_HIGH']),
+    ('VALOR', ['t_LOW']),
     ('ASIGNACION', ['t_identifier', 'ASIGN_ID']),
     ('ASIGN_ID', ['ASIGN']),
     ('ASIGN_ID', ['COMP_ARIT']),
     ('ASIGN', ['t_assigment', 'VALOR_ASIG']),
-    ('VALOR_ASIG', ['OPER']),
-    ('VALOR_ASIG', ['VALOR']),
+    
+    ('VALOR_ASIG', ['VAL_ORID', 'VALASIG_TYPE']),
+    ('VALASIG_TYPE', ['OPER_TYPE']),
+    ('VALASIG_TYPE', ['ε']),
+
+    #('VALOR_ASIG', ['VALOR']),
     #('VALOR_ASIG', ['FUNC_CALL']),
 
     ('VAL_ORID', ['VALOR']),
     ('VAL_ORID', ['t_identifier']),
     #('VAL_ORID', ['t_identifier', 'FUNC_CALL_NIDENT']),
-    ('FUNC_IDENT', ['ε']),
+    #('FUNC_IDENT', ['ε']),
     #('FUNC_IDENT', ['FUNC_CALL_NIDENT']),
 
     #STATEMENTS
     ('STATEMENT', ['t_identifier', 'STATEMENTDEC']),
-    ('STATEMENTDEC', ['ASIGN_ID', 't_semi_colon']),
+    ('STATEMENTDEC', ['t_assigment', 'OPER', 't_semi_colon']),
+    ('STATEMENTDEC', ['COMP_ARIT', 't_semi_colon']),
+    ('STATEMENTDEC', ['COMPOUND_OPER', 'VALOR_ASIG','t_semi_colon']),
     ('STATEMENTDEC', ['FUNC']),
 
     #OPERACIONES
     ('OPER', ['OPER_ALB']),
-    ('OPER', ['OPER_ALB']),
-    ('OPER', ['OPER_ALB']),
     #('OPER', ['OPER_COMPOU']),
-    ('OPER', ['t_parenthesis_o', 'OPER_ALB', 't_parenthesis_c']),
+    #('OPER', ['t_parenthesis_o', 'OPER_ALB', 't_parenthesis_c']),
     
     ('OPER_ALB', ['VAL_ORID', 'OPER_TYPE']),
     ('OPER_TYPE', ['ARIT_OPER', 'OPER_AS']),
     ('OPER_TYPE', ['COMPOUND_OPER', 'OPER_AS']),
     ('OPER_TYPE', ['COMP_OPER', 'OPER_LS']),
     ('OPER_TYPE', ['LOGIC_OPER', 'OPER_LS']),
-    ('OPER_TYPE', ['t_not', 'OPER_L']),
+    #('OPER_TYPE', ['t_not', 'OPER_L']),
 
     ('OPER_A', ['VAL_ORID', 'OPER_AP']),
+    #('OPER_AS', ['VAL_ORID']),
     ('OPER_AS', ['VAL_ORID', 'OPER_AP']),
-    ('OPER_AS', ['VAL_ORID']),
-    ('OPER_AP', ['ARIT_OPER','OPER_APP']),
-    ('OPER_AP', ['COMPOUND_OPER','OPER_APP']),
-    ('OPER_APP', ['OPER_A']),
-    ('OPER_APP', ['VAL_ORID']),
+    ('OPER_AP', ['ARIT_OPER','OPER_AS']),
+    ('OPER_AP', ['COMPOUND_OPER','OPER_AS']),
+    ('OPER_AP', ['ε']),
+    #('OPER_AP', ['t_semi_colon']),
+    #('OPER_APP', ['OPER_A']),
+    #('OPER_APP', ['VAL_ORID']),
 
-    ('OPER_L', ['t_not', 'OPER_L']),
+    #('OPER_L', ['t_not', 'OPER_LP']),
     ('OPER_LS', ['VAL_ORID', 'OPER_LP']),
-    ('OPER_LS', ['VAL_ORID']),
     ('OPER_L', ['VAL_ORID', 'OPER_LP']),
-    ('OPER_LP', ['COMP_OPER', 'OPER_LPP']),
-    ('OPER_LP', ['LOGIC_OPER', 'OPER_LPP']),
-    ('OPER_LPP', ['OPER_L']),
-    ('OPER_LPP', ['VAL_ORID']),
+    ('OPER_LP', ['COMP_OPER', 'OPER_LS']),
+    ('OPER_LP', ['LOGIC_OPER', 'OPER_LS']),
+    ('OPER_LP', ['ε']),
+    #('OPER_LP', ['t_semi_colon']),
+    #('OPER_LPP', ['OPER_L']),
+    #('OPER_LPP', ['VAL_ORID']),
 
-    ('OPER_B', ['VAL_ORID', 'OPER_BP']),
-    ('OPER_BP', ['BITE_OPER', 'OPER_B', 'OPER_BP']),
-    ('OPER_BP', ['ε']),
+    #('OPER_B', ['VAL_ORID', 'OPER_BP']),
+    #('OPER_BP', ['BITE_OPER', 'OPER_B', 'OPER_BP']),
+    #('OPER_BP', ['ε']),
 
-    ('OPER_COMPOU', ['t_identifier', 'OPER_COMPOUP']),
-    ('OPER_COMPOU', ['VALOR']),
-    ('OPER_COMPOU', ['VALOR_ASIG']),
-    ('OPER_COMPOUP', ['COMPOUND_OPER', 'OPER_COMPOUPP']),   
-    ('OPER_COMPOUP', ['COMP_ARIT']),
-    ('OPER_COMPOUPP', ['OPER_A']),
-    ('OPER_COMPOUPP', ['OPER_COMPOU']),
+    #('OPER_COMPOU', ['t_identifier', 'OPER_COMPOUP']),
+    #('OPER_COMPOU', ['VALOR']),
+    #('OPER_COMPOU', ['VALOR_ASIG']),
+    #('OPER_COMPOUP', ['COMPOUND_OPER', 'OPER_COMPOUPP']),   
+    #('OPER_COMPOUP', ['COMP_ARIT']),
+    #('OPER_COMPOUPP', ['OPER_A']),
+    #('OPER_COMPOUPP', ['OPER_COMPOU']),
     
     ('ARIT_OPER', ['t_plus']),
     ('ARIT_OPER', ['t_sub']),
@@ -471,21 +485,27 @@ prod = [
     ('FUNC_CALL', ['t_identifier', 't_parenthesis_o', 'PARAMS', 't_parenthesis_c']),
     ('FUNC_CALL_NIDENT', ['t_parenthesis_o', 'PARAMS', 't_parenthesis_c']),
 
-    ('PARAMS', ['t_identifier', 'PARAMSP']),
-    ('PARAMS', ['VALOR_ASIG', 'PARAMSP']),
-    ('PARAMSP', ['t_comma','PARAMS', 'PARAMSP']),
+    ('PARAMS', ['VAL_ORID', 'PARAMSP']),
+    #('PARAMS', ['ASIGN_ID', 'PARAMSP']),
+    ('PARAMSP', ['t_comma','PARAMS']),
     ('PARAMSP', ['ε']),
+
+    #('L_BLOQUES', ['BLOQUE', 'L_BLOQUESP']),
+    #('L_BLOQUESP', ['L_BLOQUES']),
+    #('L_BLOQUESP', ['ε']),
     
     #ESTRUCTURAS DE CONTROL
     ('CONTROL', ['IF']),
-    ('CONTROL', ['IF_ELIF']),
-    ('CONTROL', ['IF_ELSE']),
     ('CONTROL', ['SWITCH']),
+    ('IF_OR_IF_ELSE', ['t_if', 'IF_DEC']),
 
-    ('IF', ['t_if', 't_parenthesis_o', 'OPER_L', 't_parenthesis_c', 'BLOCKS']),
+    ('IF', ['t_if', 't_parenthesis_o', 'OPER_L', 't_parenthesis_c', 'BLOCKS', 'IF_ELSE']),
+
     ('BLOCKS', ['BLOQUE']),
     ('BLOCKS', ['t_brace_o', 'L_BLOQUES', 't_brace_c']),
-    ('IF_ELSE', ['IF', 't_else', 'BLOCKS']),
+
+    ('IF_ELSE', ['t_else', 'BLOCKS']),
+    ('IF_ELSE', ['ε']),
     
     ('SWITCH', ['t_switch', 't_parenthesis_o', 'VALOR_ASIG', 't_parenthesis_c', 't_brace_o', 'N_CASE',  'DEFAULT', 't_brace_c']),
     
@@ -503,30 +523,45 @@ prod = [
     ('REPETICION', ['WHILE']),
     ('REPETICION', ['FOR']),
     ('DO_WHILE', ['t_do', 'DO_WHILEP']),
-    ('DO_WHILEP', ['BLOQUE', 't_while', 't_parenthesis_o', 'OPER_L', 't_parenthesis_c', 't_semi_colon']),
-    ('DO_WHILEP', ['t_brace_o', 'L_BLOQUES','t_brace_c','t_while', 't_parenthesis_o', 'OPER_L', 't_parenthesis_c', 't_semi_colon']),
+
+    ('DO_WHILEP', ['BLOCKS', 't_while', 't_parenthesis_o', 'OPER_L', 't_parenthesis_c', 't_semi_colon']),
+
+    #('DO_WHILEP', ['BLOQUE', 't_while', 't_parenthesis_o', 'OPER_L', 't_parenthesis_c', 't_semi_colon']),
+    #('DO_WHILEP', ['t_brace_o', 'L_BLOQUES','t_brace_c','t_while', 't_parenthesis_o', 'OPER_L', 't_parenthesis_c', 't_semi_colon']),
+    
     ('WHILE', ['t_while', 't_parenthesis_o', 'OPER_L', 't_parenthesis_c', 'BLOCKS']),
-    ('FOR', ['t_for', 't_parenthesis_o', 'ASIGNACION', 't_semi_colon', 'OPER_L', 't_semi_colon', 'ASIGNACION', 't_parenthesis_c', 'BLOCKS']),
+    ('FOR', ['t_for', 't_parenthesis_o', 'FORDEC']),
+    ('FORDEC', ['ASIGNACION','t_semi_colon', 'OPER_L', 't_semi_colon', 'ASIGNACION', 't_parenthesis_c', 'BLOCKS']),
+    ('FORDEC', ['VAR_FUNC', 'OPER_L', 't_semi_colon', 'ASIGNACION', 't_parenthesis_c', 'BLOCKS']),
+    ('FORASIG', ['ASIGNACION']),
+    ('FORDECLAR', ['VAR_FUNC']),
     #FUNCIONES
     ('FUNC', ['t_parenthesis_o', 'FUNCDEC']),
+    ('FUNC', ['t_dot', 'FUNCDOT']),
+    ('FUNCDOT', ['t_identifier', 'FUNC']),
     ('FUNCDEC', ['FUNCPAR']),
     ('FUNCDEC', ['FUNCNOPAR']),
     ('FUNCPAR', ['PARAMS', 't_parenthesis_c', 'FUNCP']),
     ('FUNCNOPAR', ['t_parenthesis_c', 'FUNCP']),
     ('FUNCP', ['t_semi_colon']),
-    ('FUNCP', ['t_brace_o', 'L_BLOQUES', 'RETURN', 't_brace_c']),
+    ('FUNCP', ['t_brace_o', 'L_BLOQUES', 'FUNCPDEC']),
+    ('FUNCPDEC', ['FUNCRET']),
+    ('FUNCPDEC', ['FUNCNORET']),
+    ('FUNCRET', ['RETURN', 't_brace_c']),
+    ('FUNCNORET', ['t_brace_c']),
+    
     ('RETURN', ['t_return', 'RETURNP']),
-    ('RETURN', ['ε']),
     ('RETURNP', ['VALOR_ASIG', 't_semi_colon']),
     ('RETURNP', ['t_semi_colon']),
     #PREPROCESADOR
-    ('PRE_PRO', ['DEFINE']),
-    ('PRE_PRO', ['INCLUDE']),
-    ('DEFINE', ['t_sharp', 't_define', 't_identifier', 'TOK_REMP']),
+    ('PRE_PRO', ['t_sharp', 'PRE_PRODEC']),
+    ('PRE_PRODEC',['DEFINE']),
+    ('PRE_PRODEC',['INCLUDE']),
+    ('DEFINE', ['t_define', 't_identifier', 'TOK_REMP']),
     ('TOK_REMP', ['t_identifier']),
     ('TOK_REMP', ['VALOR']),
-    ('TOK_REMP', ['OPER']),
-    ('INCLUDE', ['t_sharp', 't_include', 't_lib']),
+    #('TOK_REMP', ['OPER']),
+    ('INCLUDE', ['t_include', 't_lib']),
     
     ]
 
@@ -545,14 +580,18 @@ if __name__ == "__main__":
         exit(-1)
     lexer = Scanner(rules, buffer)
     grammar = Grammar(no_term, term, 'PROGRAMA', prod)
-    '''
-    for non_term in grammar.N:
-        print('Primeros de {} : {}'.format(non_term, grammar.first[non_term]))
-    print('-------------------------------')
-    for predic in grammar.predic :
-        print(predic)
-    print(grammar.isLL1())
-    '''
+    ll1status=grammar.isLL1()
+    print('ES LL1: '+str(ll1status))
+    if not ll1status:
+        for non_term in grammar.N:
+            print('Primeros de {} : {}'.format(non_term, grammar.first[non_term]))
+        print('-------------------------------')
+        for predic in grammar.predic :
+            print(predic)
+        print('-------------------------------')
+        print(grammar.getFollows('OPER_AP'))
+    
+    
     parser = Parser(lexer, grammar)
     parser.analyze()
 
