@@ -68,8 +68,8 @@ class Scanner():
                 self.position = match.start()
             else :
                 return None
-            #match = self.regex.match(self.buffer, self.position)
-            match = self.regex.match(self.buffer, (self.line, self.column))
+            match = self.regex.match(self.buffer, self.position)
+            #match = self.regex.match(self.buffer, (self.line, self.column))
             if match:
                 group_name = match.lastgroup
                 t_type = self.group_types[group_name]
@@ -199,6 +199,9 @@ if __name__ == "__main__":
         ('default',                                                                 't_default'),
         ('true',                                                                    't_true'),
         ('false',                                                                   't_false'),
+        ('const',                                                                   't_const'),
+        ('static',                                                                  't_static'),
+        ('volatile',                                                                't_volatile'),
         ('(((\d+)(\.)(\d+)(f)?)|((\d+)(E)(\-|\+)(\d)))',                            't_float'),
         ('((((0)(((x([abcdefABCDEF]|\d){1,8}))|(b([01]+))))|(\d+))(l|L)?(u|U)?)',   't_int'),
         ('(\'.\')',                                                                 't_char'),

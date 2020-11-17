@@ -1,17 +1,28 @@
-//#include <stdio.h>
-//#include "mi_lib.h"
-/*
-long int _test = 3L;
+const int BUTTON = X < Y ? HIGH : LOW;
 
-int binario = 0b01001;
-while(true){
-    a += 0;
+if( 3 < 2 ? true : false){
+  print();
 }
 
-Serial.write("Hola mundo");
-binario += 0b0110;
->=
-%hola; 
-*/
+/*
+int LED = 3;
+int BUTTONstate = 0;
 
-int algo[3] = {3, 4};
+void setup()
+{
+  pinMode(BUTTON, INPUT);
+  pinMode(LED, OUTPUT);
+}
+
+void loop()
+{
+  BUTTONstate = digitalRead(BUTTON);
+  if (BUTTONstate == HIGH)
+  {
+    digitalWrite(LED, HIGH);
+  } 
+  else{
+    digitalWrite(LED, LOW);
+  }
+}
+*/
