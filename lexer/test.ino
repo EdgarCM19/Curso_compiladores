@@ -1,28 +1,28 @@
+#include <Firmata.h>
+
+int led = 13; 
+int algo = 0x3dfe45;
+int algo = 0x3dfe45;
 const int BUTTON = X < Y ? HIGH : LOW;
-
-if( 3 < 2 ? true : false){
-  print();
+void setup() {
+  pinMode(led, OUTPUT); 
+  Serial.begin(9600);
 }
 
+led++; //Comentario
+led += 3;
 /*
-int LED = 3;
-int BUTTONstate = 0;
-
-void setup()
-{
-  pinMode(BUTTON, INPUT);
-  pinMode(LED, OUTPUT);
-}
-
-void loop()
-{
-  BUTTONstate = digitalRead(BUTTON);
-  if (BUTTONstate == HIGH)
-  {
-    digitalWrite(LED, HIGH);
-  } 
-  else{
-    digitalWrite(LED, LOW);
-  }
-}
+nada más para ver
 */
+void loop() {
+  digitalWrite(led, HIGH);
+  if(led >= 0)
+    Serial.write("Cadena");
+  else
+    Serial.wite("Otra cosa");
+    for(i=0 ; i < 10; i++){
+      algo += i + 2;
+    }
+}
+
+
