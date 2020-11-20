@@ -4,24 +4,19 @@ int led = 4.3;
 int led = 4;
 
 /*
-int LED = 3;
-int BUTTONstate = 0;
+led++; //Comentario
+led += 3;
 
-void setup()
-{
-  pinMode(BUTTON, INPUT);
-  pinMode(LED, OUTPUT);
-}
-
-void loop()
-{
-  BUTTONstate = digitalRead(BUTTON);
-  if (BUTTONstate == HIGH)
-  {
-    digitalWrite(LED, HIGH);
-  } 
-  else{
-    digitalWrite(LED, LOW);
-  }
+void loop() {
+  digitalWrite(led, HIGH);
+  if(led >= 0)
+    Serial.write("Cadena");
+  else
+    Serial.wite("Otra cosa");
+    for(i=0 ; i < 10; i++){
+      algo += i + 2;
+    }
 }
 */
+
+

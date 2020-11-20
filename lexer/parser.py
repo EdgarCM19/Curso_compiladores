@@ -380,7 +380,7 @@ term = ['t_lib', 't_string', 't_brace_o', 't_brace_c', 't_bracket_o', 't_bracket
     't_parenthesis_c', 't_sharp', 't_comma', 't_dot', 't_semi_colon', 't_question', 't_colon', 't_mod_equals',
     't_mod', 't_multiply_equals', 't_asterisk', 't_plus_plus', 't_plus_equals', 't_plus', 't_sub_sub', 't_great_equals',
     't_sub_equals', 't_sub', 't_divide_equals', 't_divide', 't_comparation', 't_assigment', 't_diferent_to',
-    't_not', 't_left_desp', 't_less_equals', 't_less', 't_rigth_desp', 't_great_equal', 't_great', 't_and', 
+    't_not', 't_left_desp', 't_less_equals', 't_less', 't_rigth_desp', 't_great', 't_and', 
     't_ampersand', 't_or', 't_bit_or', 't_bit_xor_equals', 't_bit_xor', 't_c1_equals', 't_c1', 't_kw_bool', 
     't_kw_byte', 't_kw_char', 't_kw_double', 't_kw_float', 't_kw_int', 't_kw_long', 't_kw_short', 't_kw_unsigned', 't_kw_string', 't_kw_void',
     't_kw_word', 't_define', 't_include', 't_HIGH', 't_LOW', 't_INPUT_PULLUP', 't_INPUT', 't_OUTPUT', 't_LED_BUILTIN',
@@ -400,6 +400,7 @@ prod = [
     ('BLOQUE', ['REPETICION']),
     ('BLOQUE', ['PRE_PRO']),
     ('VAR_FUNC', ['TIPOV', 't_identifier', 'VAR_FUNCP']),
+    ('VAR_FUNC', ['TIPO', 't_identifier', 'VAR_FUNCP']),
     ('VAR_FUNCP', ['VAR']),
     ('VAR_FUNCP', ['FUNC']),
     
@@ -483,7 +484,7 @@ prod = [
     #OPERACIONES
     ('OPER', ['OPER_ALB']),
     #('OPER', ['OPER_COMPOU']),
-    #('OPER', ['t_parenthesis_o', 'OPER_ALB', 't_parenthesis_c']),
+    ('OPER', ['t_parenthesis_o', 'OPER_ALB', 't_parenthesis_c']),
     
     ('OPER_ALB', ['VAL_ORID', 'OPER_TYPE']),
     ('OPER_TYPE', ['ARIT_OPER', 'OPER_AS']),
@@ -506,14 +507,17 @@ prod = [
     ('OPER_LS', ['VAL_ORID', 'OPER_LP']),
     ('OPER_L', ['VAL_ORID', 'OPER_LP']),
 
-    ('OPER_L', ['TERNARIO']),
+    #('OPER_L', ['TER_ORVAL_ORID', ]),
+
+    ('OPER_LP', ['t_question', 'VAL_ORID', 't_colon', 'VAL_ORID']),
 
     ('OPER_LP', ['COMP_OPER', 'OPER_LS']),
     ('OPER_LP', ['LOGIC_OPER', 'OPER_LS']),
+
     ('OPER_LP', ['ε']),
 
 
-    ('TERNARIO', ['OPER_LS', 't_question', 'VAL_ORID', 't_colon', 'VAL_ORID']),
+    #('TERNARIO', ['OPER_LS', ]),
 
     #('OPER_LP', ['t_semi_colon']),
     #('OPER_LPP', ['OPER_L']),
@@ -578,7 +582,7 @@ prod = [
     #ESTRUCTURAS DE CONTROL
     ('CONTROL', ['IF']),
     ('CONTROL', ['SWITCH']),
-    ('IF_OR_IF_ELSE', ['t_if', 'IF_DEC']),
+
 
     ('IF', ['t_if', 't_parenthesis_o', 'OPER_L', 't_parenthesis_c', 'BLOCKS', 'IF_ELSE']),
 
@@ -613,9 +617,7 @@ prod = [
     ('WHILE', ['t_while', 't_parenthesis_o', 'OPER_L', 't_parenthesis_c', 'BLOCKS']),
     ('FOR', ['t_for', 't_parenthesis_o', 'FORDEC']),
     ('FORDEC', ['ASIGNACION','t_semi_colon', 'OPER_L', 't_semi_colon', 'ASIGNACION', 't_parenthesis_c', 'BLOCKS']),
-    ('FORDEC', ['VAR_FUNC', 'OPER_L', 't_semi_colon', 'ASIGNACION', 't_parenthesis_c', 'BLOCKS']),
-    ('FORASIG', ['ASIGNACION']),
-    ('FORDECLAR', ['VAR_FUNC']),
+
     #FUNCIONES
     ('FUNC', ['t_parenthesis_o', 'FUNCDEC']),
     ('FUNC', ['t_dot', 'FUNCDOT']),
