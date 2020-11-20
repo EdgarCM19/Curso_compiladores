@@ -1,8 +1,7 @@
-const int BUTTON = X < Y ? HIGH : LOW;
+//#include "milib.h"
 
-if( 3 < 2 ? true : false){
-  print();
-}
+int led = 4.3;
+int led = 4;
 
 /*
 int LED = 3;

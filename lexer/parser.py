@@ -1,4 +1,5 @@
 from lexer import Scanner
+from symbol_table import SymbolTable
 
 class Grammar():
     '''
@@ -143,16 +144,86 @@ class Grammar():
         self.predicfun()
         self.createTable()
         #self.saveTable()
+
+class Node():
+    def __init__(self, symbol, term, type_):
+        self.symbol = symbol
+        self.term = term
+        self.nodes = []
+        self.type = type_
+
+    def __str__(self):
+        return '[DATO]>{} | [TIPO]>{}'.format(self.symbol, self.type)
+        '''
+        return '[Dato]>{} | [Hijos]>{}'.format(
+                                            self.symbol, 
+                                            ', '.join([node.symbol for node in self.nodes]))
+        '''
+
+class SyntaxTree():
+    
+    def __init__(self, root):
+        self.root = root
+
+    def insertInNode(self, node, symbol, term, type_):
+        #print('Insertando {} en {}'.format(symbol, node))
+        nodeT = self.getNode(node)
+        nodeT.nodes.append(Node(symbol, term, type_))
+
+    def getNode(self, symbol):
+        return self.getNodeR(self.root, symbol)
+
+    def getNodeR(self, node, symbol):
+        if(node.symbol == symbol): return node
+        else :
+            for n in node.nodes :
+                resul = self.getNodeR(n, symbol)
+                if resul == None:
+                    continue
+                else : return resul
+        return None
+    
+    def printN(self):
+        self.printR(self.root)
+
+    def printR(self, node):
+        print(node)
+        for no in node.nodes :
+            self.printR(no)
+
+    def printHojas(self):
+        self.__printHojasR(self.root)
+
+    def __printHojasR(self, node):
+        if len(node.nodes) == 0 and node.term: print(node)
+        else :
+            for nod in node.nodes:
+                self.__printHojasR(nod)
+    
+    def getList(self):
+        self.listNodes = list()
+        self.proccessList(self.root)
+        return self.listNodes
+
+    def proccessList(self, node):
+        if len(node.nodes) == 0 and node.term: self.listNodes.append(node)
+        else :
+            for nod in node.nodes:
+                self.proccessList(nod)
+
+
 class Parser():
 
-    def __init__(self, lexer: Scanner, grammar : Grammar):
+    def __init__(self, lexer: Scanner, grammar : Grammar, symbolTable : SymbolTable):
         self.lexer = lexer
         self.grammar = grammar
+        self.symbolTable = symbolTable
 
     def analyze(self):
         stack = list()
         stack.append('$')
         stack.append(self.grammar.S)
+        tree = SyntaxTree(Node(self.grammar.S, False, '-'))
         log = ""
         print("Inicio del analisis sintactico")
         while True :
@@ -161,11 +232,19 @@ class Parser():
             A = stack[len(stack) - 1]
             a = lexer.stackPeek()
             if a is None : break
+            #tree.insertInNode(A, a.lexema)
+
+            if A == 'VAR':
+                self.symbolTable.nextToAnalize = A
             if A in self.grammar.T + ['$']:
                 if A == a.type :
+                    if(a.lexema == ';'):
+                        self.symbolTable.proccessBlock(tree.getList())
+                        #self.symbolTable.processBlock(tree.getList())
                     #print('[Salida]>Emparejar {}'.format(a))
                     log += ('[Salida]>Emparejar {} \n'.format(a.type))
                     stack.pop()
+                    tree.insertInNode(A, a.lexema, True, a.type)
                     if len(stack) != 0:
                         a = lexer.stackPop()
                         if a is None : break
@@ -179,6 +258,8 @@ class Parser():
                     _, producs = production
                     log += ('[Salida]>{} -> {} \n'.format(_, " ".join(producs)))
                     stack.pop()
+                    for ci in producs:
+                        if(ci != 'ε'): tree.insertInNode(A, ci, False, ci) 
                     for ci in reversed(producs):
                         if ci != 'ε':
                             stack.append(ci)
@@ -188,8 +269,12 @@ class Parser():
                     break
             if A == '$':
                 break
-        print(log)
-        print("Analisis sintactico finalizado")
+        #print(log)
+        #print('Arbol:')
+        #tree.printN()
+        #print('hojas:')
+        #tree.printHojas()
+        #print("Analisis sintactico finalizado")
 
 rules = [ 
     ('((\/\*[\s\S]*?\*\/)|(\/\/+((.)*)+\n))',                                   't_comment'),
@@ -289,7 +374,7 @@ no_term = ['PROGRAMA', 'L_BLOQUES', 'L_BLOQUESP', 'BLOQUE', 'VAR_FUNC', 'VAR', '
     'FOR_INC', 'RETURN', 'DEFINE', 'INCLUDE', 'TOK_REMP', 'V_NORMALPP', 'V_NORMALP', 'V_ARRAYPP', 'V_ARRAYP', 'FOR_CONDPP', 'STATEMENT', 'OPER_AS',
     'V_ARRAYPPP', 'DIMEN', 'A_INIT', 'OTRO', 'OPER_AP', 'OPER_LP', 'OPER_BP', 'OPER_COMPOU', 'OPER_COMPOUP', 'OPER_COMPOUPP', 'PARAMS', 'OPER_LS',
     'PARAMSP', 'BLOCKS', 'N_CASEP', 'DO_WHILEP', 'FOR_CONDP', 'FUNCP', 'RETURNP', 'VALOR_ASIG', 'COMP_OPER', 'BITE_OPER', 'V_NORMALASIG', 'V_ARRAYFORM', 'VAR_FUNCP',
-    'FUNCPDEC', 'FUNCRET', 'FUNCNORET', 'PRE_PRODEC', 'VALASIG_TYPE', 'SCOPE', 'TIPOV', 'TERNARIO'
+    'FUNCPDEC', 'FUNCRET', 'FUNCNORET', 'PRE_PRODEC', 'VALASIG_TYPE', 'SCOPE', 'TIPOV', 'TERNARIO', 'STATEMENTDECPP'
 ]
 term = ['t_lib', 't_string', 't_brace_o', 't_brace_c', 't_bracket_o', 't_bracket_c', 't_parenthesis_o',
     't_parenthesis_c', 't_sharp', 't_comma', 't_dot', 't_semi_colon', 't_question', 't_colon', 't_mod_equals',
@@ -337,6 +422,7 @@ prod = [
     #TIPO DE DATOS
 
     ('TIPOV', ['SCOPE', 'TIPO']), 
+    ('TIPOV', ['TIPO']), 
 
     ('SCOPE', ['t_const']),
     ('SCOPE', ['t_static']),
@@ -371,7 +457,7 @@ prod = [
     ('ASIGN', ['t_assigment', 'VALOR_ASIG']),
     
     ('VALOR_ASIG', ['VAL_ORID', 'VALASIG_TYPE']),
-    ('VALOR_ASIG', ['TERNARIO']),
+    #('VALOR_ASIG', ['TERNARIO']),
     ('VALASIG_TYPE', ['OPER_TYPE']),
     ('VALASIG_TYPE', ['ε']),
 
@@ -386,7 +472,9 @@ prod = [
 
     #STATEMENTS
     ('STATEMENT', ['t_identifier', 'STATEMENTDEC']),
-    ('STATEMENTDEC', ['t_assigment', 'OPER', 't_semi_colon']),
+    ('STATEMENTDEC', ['t_assigment', 'STATEMENTDECPP']),
+    ('STATEMENTDECPP', ['OPER', 't_semi_colon']),
+    ('STATEMENTDECPP', ['VAL_ORID', 't_semi_colon']),
     ('STATEMENTDEC', ['COMP_ARIT', 't_semi_colon']),
     ('STATEMENTDEC', ['COMPOUND_OPER', 'VALOR_ASIG','t_semi_colon']),
     ('STATEMENTDEC', ['FUNC']),
@@ -553,7 +641,6 @@ prod = [
     ('DEFINE', ['t_define', 't_identifier', 'TOK_REMP']),
     ('TOK_REMP', ['t_identifier']),
     ('TOK_REMP', ['VALOR']),
-    #('TOK_REMP', ['OPER']),
     ('INCLUDE', ['t_include', 't_lib']),
     
     ]
@@ -579,8 +666,10 @@ if __name__ == "__main__":
     if buffer is None:
         print('Error de lectura de archivo')
         exit(-1)
-    lexer = Scanner(rules, buffer)
+    symbTable = SymbolTable(['main', 'pinMode'])
+    lexer = Scanner(rules, buffer, symbTable)
     grammar = Grammar(no_term, term, 'PROGRAMA', prod)
+    '''
     ll1status=grammar.isLL1()
     print('ES LL1: '+str(ll1status))
     if not ll1status:
@@ -592,45 +681,9 @@ if __name__ == "__main__":
         print('-------------------------------')
         print(grammar.getFollows('OPER_AP'))
     
-    
-    parser = Parser(lexer, grammar)
+    '''
+    parser = Parser(lexer, grammar, symbTable)
     parser.analyze()
 
-
-
-'''
-no_term = ['E', 'E\'', 'T', 'T\'', 'F']
-term = ['+', '*', '(', ')', 'ident']
-prod = [
-    ('E', ['T', 'E\'']),        #('E',   'T E\''),
-    ('E\'', ['+', 'T', 'E\'']), #('E\'', '+ T E\''),
-    ('E\'', ['ε']),
-    ('T', ['F', 'T\'']),        #('T',   'F T\''),
-    ('T\'', ['*', 'F', 'T\'']), #('T\'', '* F T'),
-    ('T\'', ['ε']),
-    ('F', ['(', 'E', ')']),     #('F',   '( E )'),
-    ('F',   ['ident']),
-]
-'''
-'''
-no_term = ['S', 'A', 'B']
-term = ['a', 'b', 'c', 'd', 'e', 'f']
-prod = [
-    ('S', ['A', 'B']),        
-    ('S', ['s']),
-    ('A', ['a', 'S', 'c']),
-    ('A', ['e', 'B', 'f']),
-    ('A', ['ε']),       
-    ('B', ['b', 'A', 'd']),
-    ('B', ['ε']),
-]
-'''
-'''
-no_term = ['A', 'B']
-term = ['a', 'b', 'c']
-prod = [     
-    ('A', ['a', 'b', 'B']),
-    ('A', ['B', 'b']),       
-    ('B', ['b']),
-    ('B', ['c']),
-]'''
+    #print('++++++++++')
+    #print(symbTable)

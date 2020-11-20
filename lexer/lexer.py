@@ -21,7 +21,7 @@ class Scanner():
     '''
     Clase encargada de abrir, procesar y retornar todos los tokens existentes en un archivo de entrada.
     '''
-    def __init__(self, regular_expresions, buffer):
+    def __init__(self, regular_expresions, buffer, symbolTable):
         '''
         Recive una lista de tuplas las cuales contienen una expresion regular con el nombre del conjunto de dicha expresion regular.
         Recive un buffer el cual es el texto a procesar. 
@@ -34,7 +34,9 @@ class Scanner():
         self.position = 0
         self.column = 0;
         self.line = 0;
+        self.symbolTable = symbolTable;
         self.initTokenStack()
+
 
         
     def initRegex(self, regex):
@@ -75,6 +77,10 @@ class Scanner():
                 t_type = self.group_types[group_name]
                 token = Token(t_type, match.group(group_name), self.position)
                 self.position = match.end()
+                '''
+                if(token.type in ['t_identifier']):
+                    self.symbolTable.insertSymbol(token.lexema)
+                '''
                 return token
             raise ScannerError(self.position)
     
@@ -93,9 +99,9 @@ class Scanner():
         except ScannerError as e:
             print('Error at position {}'.format(e.position))
         #self.stack = list(reversed(self.stack))
-        print('[STACK]>')
-        for t in self.stack:
-            print(t)
+        #print('[STACK]>')
+        #for t in self.stack:
+        #    print(t)
 
     def stackPeek(self):
         if len(self.stack) > 0:
