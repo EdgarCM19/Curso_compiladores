@@ -213,7 +213,7 @@ class SyntaxTree():
         else :
             for nod in node.nodes:
                 self.proccessList(nod)
-
+##################################clase nodo
 class Node():
     def __init__(self, symbol):
         self.father = None
@@ -227,7 +227,7 @@ class Node():
             cad=cad+item.Symbol+" "
         return cad
 
- #### Buscador de producciones
+ ############################### Buscador de producciones
 
 def findgrammarrule(Father, Symbol):
     for item in prod:
@@ -243,13 +243,21 @@ def findgrammarrule(Father, Symbol):
                     aux.append(i)
                 return aux
     return None
-
+###################################clase arbol
 class Tree:
     def __init__(self, root):
         self.root=root
         self.lastFather=None
         self.auxList=[]
-
+    def printTree(self, node): 
+            if node == None: 
+                return
+            print("{} :".format(node.Symbol), end="")
+            for item in node.child:
+                print(item.Symbol, end=" ")
+            print("")
+            for item in node.child:
+                self.printTree(item)
     def createTree(self, temp):
         actualNode=Node(temp)
         if len(self.auxList)>0:
@@ -288,7 +296,7 @@ class Parser():
         self.symbolTable = symbolTable
     
     def analyze(self):
-        arbol=Tree(None)
+        arbol=Tree(None)#################################crear arbol
         stack = list()
         stack.append('$')
         stack.append(self.grammar.S)
@@ -304,7 +312,7 @@ class Parser():
                 if A == a.type :
                     log += ('[Salida]>Emparejar {} \n'.format(a.type))
                     #stack.pop()
-                    arbol.createTree(stack.pop())
+                    arbol.createTree(stack.pop()) ##############################llamado a funcion de arbol
                     if len(stack) != 0:
                         a = lexer.stackPop()
                         if a is None : break
@@ -318,7 +326,7 @@ class Parser():
                     _, producs = production
                     log += ('[Salida]>{} -> {} \n'.format(_, " ".join(producs)))
                     #stack.pop()
-                    arbol.createTree(stack.pop())
+                    arbol.createTree(stack.pop()) ##########################llamado a funcion de arbol
                     for ci in reversed(producs):
                         if ci != 'ε':
                             stack.append(ci)
@@ -328,16 +336,8 @@ class Parser():
             if A == '$':
                 break
         print(log)
-        def printTree(node): 
-            if node == None: 
-                return
-            print("{} :".format(node.Symbol), end="")
-            for item in node.child:
-                print(item.Symbol, end=" ")
-            print("")
-            for item in node.child:
-                printTree(item)
-        printTree(arbol.root)
+        
+        arbol.printTree(arbol.root)##########################imprimir arbol
         print("Analisis sintactico finalizado")
 
 rules = [ 
