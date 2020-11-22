@@ -148,84 +148,14 @@ class Grammar():
         self.createTable()
         #self.saveTable()
 
-class Node():
-    def __init__(self, symbol, term, type_):
-        self.symbol = symbol
-        self.term = term
-        self.nodes = []
-        self.type = type_
-
-    def __str__(self):
-        return '[DATO]>{} | [TIPO]>{}'.format(self.symbol, self.type)
-        '''
-        return '[Dato]>{} | [Hijos]>{}'.format(
-                                            self.symbol, 
-                                            ', '.join([node.symbol for node in self.nodes]))
-        '''
-
-class SyntaxTree():
-    
-    def __init__(self, root):
-        self.root = root
-
-    def insertInNode(self, node, symbol, term, type_):
-        #print('Insertando {} en {}'.format(symbol, node))
-        nodeT = self.getNode(node)
-        nodeT.nodes.append(Node(symbol, term, type_))
-
-    def getNode(self, symbol):
-        return self.getNodeR(self.root, symbol)
-
-    def getNodeR(self, node, symbol):
-        if(node.symbol == symbol): return node
-        else :
-            for n in node.nodes :
-                resul = self.getNodeR(n, symbol)
-                if resul == None:
-                    continue
-                else : return resul
-        return None
-    
-    def printN(self):
-        self.printR(self.root)
-
-    def printR(self, node):
-        print(node)
-        for no in node.nodes :
-            self.printR(no)
-
-    def printHojas(self):
-        self.__printHojasR(self.root)
-
-    def __printHojasR(self, node):
-        if len(node.nodes) == 0 and node.term: print(node)
-        else :
-            for nod in node.nodes:
-                self.__printHojasR(nod)
-    
-    def getList(self):
-        self.listNodes = list()
-        self.proccessList(self.root)
-        return self.listNodes
-
-    def proccessList(self, node):
-        if len(node.nodes) == 0 and node.term: self.listNodes.append(node)
-        else :
-            for nod in node.nodes:
-                self.proccessList(nod)
 ##################################clase nodo
 class Node():
     def __init__(self, symbol):
         self.father = None
         self.child = []
         self.Symbol=symbol
-    def __str__(self):
-        return str(self.Symbol)
-    def getChild(self):
-        cad=""
-        for item in self.child:
-            cad=cad+item.Symbol+" "
-        return cad
+        self.info=dict()
+
 
  ############################### Buscador de producciones
 
@@ -244,26 +174,75 @@ def findgrammarrule(Father, Symbol):
                 return aux
     return None
 ###################################clase arbol
+
+
 class Tree:
     def __init__(self, root):
         self.root=root
         self.lastFather=None
         self.auxList=[]
     def printTree(self, node): 
-            if node == None: 
+        if node == None: 
+            return
+        print("{} HIJOS:".format(node.Symbol), end="")
+        for item in node.child:
+            print(item.Symbol, end=" ")
+        print("info:{}".format(node.info))
+        for item in node.child:
+            self.printTree(item)
+
+    def countparams(self, root):
+        if root == None: 
+            return 0
+        if root.Symbol=='VAL_ORID':
+            return 1
+        suma=0
+        for item in root.child:
+            suma=suma+self.countparams(item)
+        return suma
+    
+    def tagTree(self, root):
+        if root == None: 
                 return
-            print("{} :".format(node.Symbol), end="")
-            for item in node.child:
-                print(item.Symbol, end=" ")
-            print("")
-            for item in node.child:
-                self.printTree(item)
-    def createTree(self, temp):
-        actualNode=Node(temp)
+        if root.Symbol=='STATEMENT':
+            if root.child[1].child[0].Symbol=='FUNC':
+                temp=root.child[1].child[0]
+                root.info.setdefault('tipo', 'funcall')
+                root.info.setdefault('ident', root.child[0].info['lex'])
+                if temp.child[1].child[0]=="FUNCNOPAR":
+                    root.info.setdefault('NOparam', 0)
+                else:
+                    root.info.setdefault('NOparam', self.countparams(temp.child[1].child[0].child[0]))
+        if root.Symbol=='VAR_FUNC':
+            if root.child[2].child[0].Symbol=='FUNC':
+                temp=root.child[2].child[0]
+                root.info.setdefault('tipo', 'fundeclar')
+                root.info.setdefault('ident', root.child[1].info['lex'])
+                if temp.child[1].child[0]=="FUNCNOPAR":
+                    root.info.setdefault('NOparam', 0)
+                else:
+                    root.info.setdefault('NOparam', self.countparams(temp.child[1].child[0].child[0]))
+
+
+        #print("{} :".format(node.Symbol), end="")
+        for item in root.child:
+            self.tagTree(item)
+    
+    def searchfor(self, root, node): 
+        if root == None: 
+            return None
+        if root.Symbol == node.Symbol:
+            return root
+        #print("{} :".format(node.Symbol), end="")
+        for item in node.child:
+            self.searchfor(item, node)
+
+    def createTree(self, actualNode):
         if len(self.auxList)>0:
-            if self.auxList[-1].Symbol==temp:
+            if self.auxList[-1].Symbol==actualNode.Symbol:
                 added=self.auxList.pop()
-                if temp in no_term:
+                added.info=actualNode.info
+                if actualNode.Symbol in no_term:
                     self.lastFather=added
                 return
         if self.lastFather==None:
@@ -272,7 +251,7 @@ class Tree:
         else:
             self.lastFather.child.append(actualNode)
             actualNode.father=self.lastFather
-            brothers=findgrammarrule(self.lastFather.Symbol, temp)
+            brothers=findgrammarrule(self.lastFather.Symbol, actualNode.Symbol)
             if not (brothers==None):
                 reverse=[]
                 for item in brothers:
@@ -283,11 +262,13 @@ class Tree:
                 while len(reverse)>0:
                     self.auxList.append(reverse.pop())
             #print("self.lastFather child: "+self.lastFather.getChild())
-            if temp in term:
+            if actualNode.Symbol in term:
                 while len(self.lastFather.child)<2:
                     self.lastFather=self.lastFather.father
             else:
                 self.lastFather=actualNode
+
+
 
 class Parser():
     def __init__(self, lexer: Scanner, grammar : Grammar, symbolTable : SymbolTable):
@@ -295,6 +276,50 @@ class Parser():
         self.grammar = grammar
         self.symbolTable = symbolTable
     
+    def addtableinfo(self, root):
+        if root == None: 
+                return
+        if bool(root.info):
+            #print("Simbolo : {} :".format(root.Symbol))
+            if 'tipo' in root.info:       
+                if root.info['tipo']=='fundeclar':
+                    if 'fundeclar' in self.symbolTable.symbols.keys():
+                        if root.info['ident'] in self.symbolTable.symbols['fundeclar'].keys():
+                            print("Error {} ya declarada".format(root.info['ident']))
+                            #return
+                        else:
+                            self.symbolTable.symbols['fundeclar'].setdefault(root.info['ident'], root.info)
+                            #return
+                    else:
+                        self.symbolTable.insertSymbol('fundeclar', dict())
+                        self.symbolTable.symbols['fundeclar'].setdefault(root.info['ident'], root.info)
+                        #return
+        for item in root.child:
+            self.addtableinfo(item)
+    
+    def checkparams(self, root):
+        if root == None: 
+                return
+        if bool(root.info):
+            if 'tipo' in root.info:
+                if root.info['tipo']=='funcall':
+                    if 'fundeclar' in self.symbolTable.symbols.keys():
+                        if root.info['ident'] in self.symbolTable.symbols['fundeclar'].keys():
+                            declarparam=self.symbolTable.symbols['fundeclar'][root.info['ident']]['NOparam']
+                            if root.info['NOparam']== declarparam:
+                                print("llamado a funcion {} correcto: {} parametros recibidos".format(root.info['ident'],declarparam))
+
+                            else:
+                                print("Error {} : {} parametros esperados pero {} recibidos".format(root.info['ident'],declarparam, root.info['NOparam']))
+                                return    
+                        else:
+                            print("Error {} no declarada".format(root.info['ident']))
+                            return
+                    else:
+                        print("Error {} no declarada".format(root.info['ident']))
+                        return
+        for item in root.child:
+            self.checkparams(item)
     def analyze(self):
         arbol=Tree(None)#################################crear arbol
         stack = list()
@@ -302,6 +327,7 @@ class Parser():
         stack.append(self.grammar.S)
         log = ""
         print("Inicio del analisis sintactico")
+        #lexstack=[token for token in self.lexer.stack]
         while True :
             log += '[Pila]>{} ||| '.format(stack)             
             log += '[Entrada]>{} ||| '.format(', '.join(token.type for token in self.lexer.stack))
@@ -311,11 +337,18 @@ class Parser():
             if A in self.grammar.T + ['$']:
                 if A == a.type :
                     log += ('[Salida]>Emparejar {} \n'.format(a.type))
-                    #stack.pop()
-                    arbol.createTree(stack.pop()) ##############################llamado a funcion de arbol
+                    #print(stack.pop())
+                    #if temp==
+                    temp=Node(stack.pop())
+                    temp.info.setdefault('lex', a.lexema)
+                    #print(temp.Symbol +" El lex: " +a.lexema)
+                    #print("-------")
+                    #print("{}, info:{} :".format(temp.Symbol, temp.info), end="")
+                    arbol.createTree(temp) ##############################llamado a funcion de arbol
                     if len(stack) != 0:
                         a = lexer.stackPop()
                         if a is None : break
+                        #print(a.type)
                         a = lexer.stackPeek()
                 else :
                     log += '\n[ERROR]> Se encontro : {} pero se esperaba {}'.format(a.lexema, A)
@@ -326,7 +359,7 @@ class Parser():
                     _, producs = production
                     log += ('[Salida]>{} -> {} \n'.format(_, " ".join(producs)))
                     #stack.pop()
-                    arbol.createTree(stack.pop()) ##########################llamado a funcion de arbol
+                    arbol.createTree(Node(stack.pop())) ##########################llamado a funcion de arbol
                     for ci in reversed(producs):
                         if ci != 'ε':
                             stack.append(ci)
@@ -336,9 +369,14 @@ class Parser():
             if A == '$':
                 break
         print(log)
-        
-        arbol.printTree(arbol.root)##########################imprimir arbol
+        #nroot=arbol.searchfor(arbol.root, Node('VAR_FUNC'))
+        arbol.tagTree(arbol.root)
         print("Analisis sintactico finalizado")
+        #arbol.printTree(arbol.root)##########################imprimir arbol
+        self.addtableinfo(arbol.root)
+        self.checkparams(arbol.root)
+        print("Analisis semantico finalizado")
+        
 
 rules = [ 
     ('((\/\*[\s\S]*?\*\/)|(\/\/+((.)*)+\n))',                                   't_comment'),
@@ -635,6 +673,7 @@ prod = [
     ('FUNC_CALL_NIDENT', ['t_parenthesis_o', 'PARAMS', 't_parenthesis_c']),
 
     ('PARAMS', ['VAL_ORID', 'PARAMSP']),
+    ('PARAMS', ['TIPO','VAL_ORID', 'PARAMSP']),
     #('PARAMS', ['ASIGN_ID', 'PARAMSP']),
     ('PARAMSP', ['t_comma','PARAMS']),
     ('PARAMSP', ['ε']),
@@ -681,6 +720,7 @@ prod = [
     ('WHILE', ['t_while', 't_parenthesis_o', 'OPER_L', 't_parenthesis_c', 'BLOCKS']),
     ('FOR', ['t_for', 't_parenthesis_o', 'FORDEC']),
     ('FORDEC', ['ASIGNACION','t_semi_colon', 'OPER_L', 't_semi_colon', 'ASIGNACION', 't_parenthesis_c', 'BLOCKS']),
+    ('FORDEC', ['TIPO','ASIGNACION','t_semi_colon', 'OPER_L', 't_semi_colon', 'ASIGNACION', 't_parenthesis_c', 'BLOCKS']),
 
     #FUNCIONES
     ('FUNC', ['t_parenthesis_o', 'FUNCDEC']),
@@ -710,6 +750,7 @@ prod = [
     ('INCLUDE', ['t_include', 't_lib']),
     
     ]
+
 
 def openFile(file_name):
     if file_name.endswith('.ino'):
@@ -750,6 +791,3 @@ if __name__ == "__main__":
     '''
     parser = Parser(lexer, grammar, symbTable)
     parser.analyze()
-
-    #print('++++++++++')
-    #print(symbTable)

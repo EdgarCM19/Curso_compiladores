@@ -1,22 +1,27 @@
-//#include "milib.h"
 
-int led = 4.3;
-int led = 4;
+
+
+
+
+void loop(int a, int var){
+  int led=7;
+  if(led>=0)
+    a++;
+  else
+    a--;
+  for(int i=0; i<10; i++){
+    var += i + 2;
+  }
+  
+}
+
+loop(4);
+
 
 /*
-led++; //Comentario
-led += 3;
-
-void loop() {
+void loop(int par1,int par2,int par4) {
   digitalWrite(led, HIGH);
-  if(led >= 0)
-    Serial.write("Cadena");
-  else
-    Serial.wite("Otra cosa");
-    for(i=0 ; i < 10; i++){
-      algo += i + 2;
-    }
 }
+
+loop(par1,par2,par4);
 */
-
-

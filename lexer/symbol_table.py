@@ -13,8 +13,8 @@ class SymbolTable():
         }
 
 
-    def insertSymbol(self, symbol):
-        self.symbols.setdefault(symbol, dict())
+    def insertSymbol(self, symbol, atrib):
+        self.symbols.setdefault(symbol, atrib)
 
     def assingType(self, symbol, type_s):
         self.symbols[symbol].setdefault('type', type_s)
