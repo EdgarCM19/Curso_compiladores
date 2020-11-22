@@ -370,11 +370,11 @@ class Parser():
                 break
         print(log)
         #nroot=arbol.searchfor(arbol.root, Node('VAR_FUNC'))
-        arbol.tagTree(arbol.root)
+        arbol.tagTree(arbol.root) #se etiguetan nodos no terminales relevantes
         print("Analisis sintactico finalizado")
         #arbol.printTree(arbol.root)##########################imprimir arbol
-        self.addtableinfo(arbol.root)
-        self.checkparams(arbol.root)
+        self.addtableinfo(arbol.root)##se añaden declaraciones a la tabla de simbolos
+        self.checkparams(arbol.root)##se revisan congruencias en las llamadas a funcion
         print("Analisis semantico finalizado")
         
 
